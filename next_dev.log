@@ -32,3 +32,18 @@ Error fetching/parsing timetable: Error: Failed to fetch timetable: Not Found
  GET / 200 in 80ms (next.js: 7ms, application-code: 72ms)
  GET /api/timetable/list?url=https%3A%2F%2Fwww.pceikz.pl%2Fpliki%2Fplanlekcji%2Findex.html 200 in 1119ms (next.js: 147ms, application-code: 972ms)
  GET /api/timetable?url=https%3A%2F%2Fwww.pceikz.pl%2Fpliki%2Fplanlekcji%2Fplany%2Fo1.html 200 in 371ms (next.js: 3ms, application-code: 368ms)
+Error: "." is not exported under the conditions ["node","require"] from package /app/node_modules/tw-animate-css (see exports field in /app/node_modules/tw-animate-css/package.json)
+    [2m[at /app/node_modules/enhanced-resolve/lib/ExportsFieldPlugin.js:123:7][0m
+    [2m[at Hook.eval [as callAsync] (eval at create (/app/node_modules/tapable/lib/HookCodeFactory.js:31:10), <anonymous>:22:1)][0m
+    [2m[at Hook.CALL_ASYNC_DELEGATE [as _callAsync] (/app/node_modules/tapable/lib/Hook.js:21:14)][0m
+    [2m[at Resolver.doResolve (/app/node_modules/enhanced-resolve/lib/Resolver.js:737:16)][0m
+    [2m[at /app/node_modules/enhanced-resolve/lib/DescriptionFilePlugin.js:80:17][0m
+    [2m[at /app/node_modules/enhanced-resolve/lib/DescriptionFileUtils.js:161:24][0m
+    [2m[at /app/node_modules/enhanced-resolve/lib/forEachBail.js:39:13][0m
+    [2m[at onJson (/app/node_modules/enhanced-resolve/lib/DescriptionFileUtils.js:96:6)][0m
+    [2m[at /app/node_modules/enhanced-resolve/lib/DescriptionFileUtils.js:123:7][0m
+    [2m[at SyncAsyncFileSystemDecorator.readJson (/app/node_modules/enhanced-resolve/lib/SyncAsyncFileSystemDecorator.js:204:6)][0m
+✓ Compiled in 1600ms
+ GET / 200 in 1293ms (next.js: 99ms, application-code: 1194ms)
+ GET /api/timetable/list?url=https%3A%2F%2Fwww.pceikz.pl%2Fpliki%2Fplanlekcji%2Findex.html 200 in 1243ms (next.js: 32ms, application-code: 1210ms)
+ GET /api/timetable?url=https%3A%2F%2Fwww.pceikz.pl%2Fpliki%2Fplanlekcji%2Fplany%2Fo1.html 200 in 634ms (next.js: 21ms, application-code: 614ms)
