@@ -173,10 +173,10 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                 <Table stickyHeader aria-label="plan lekcji tabela">
                     <TableHead>
                         <TableRow>
-                            <TableCell align="center" sx={{ fontWeight: 'bold', width: '60px', bgcolor: 'grey.100' }}>Nr</TableCell>
-                            <TableCell align="center" sx={{ fontWeight: 'bold', width: '120px', bgcolor: 'grey.100' }}>Godziny</TableCell>
+                            <TableCell align="center" sx={{ fontWeight: 'bold', width: '60px', bgcolor: (theme) => theme.palette.mode === 'dark' ? 'grey.900' : 'grey.100' }}>Nr</TableCell>
+                            <TableCell align="center" sx={{ fontWeight: 'bold', width: '120px', bgcolor: (theme) => theme.palette.mode === 'dark' ? 'grey.900' : 'grey.100' }}>Godziny</TableCell>
                             {DAYS_OF_WEEK.map(day => (
-                                <TableCell key={day} align="center" sx={{ fontWeight: 'bold', minWidth: '200px', bgcolor: 'grey.100', borderLeft: '1px solid', borderColor: 'divider' }}>
+                                <TableCell key={day} align="center" sx={{ fontWeight: 'bold', minWidth: '200px', bgcolor: (theme) => theme.palette.mode === 'dark' ? 'grey.900' : 'grey.100', borderLeft: '1px solid', borderColor: 'divider' }}>
                                     {day}
                                 </TableCell>
                             ))}
@@ -185,10 +185,10 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                     <TableBody>
                         {Object.values(data.hours).map((hour, timeIndex) => (
                             <TableRow key={timeIndex} hover>
-                                <TableCell align="center" sx={{ fontWeight: 'bold', color: 'text.secondary', bgcolor: 'grey.50' }}>
+                                <TableCell align="center" sx={{ fontWeight: 'bold', color: 'text.secondary', bgcolor: (theme) => theme.palette.mode === 'dark' ? 'grey.800' : 'grey.50' }}>
                                     {hour.number}
                                 </TableCell>
-                                <TableCell align="center" sx={{ bgcolor: 'grey.50' }}>
+                                <TableCell align="center" sx={{ bgcolor: (theme) => theme.palette.mode === 'dark' ? 'grey.800' : 'grey.50' }}>
                                     <Typography variant="body2" fontWeight="medium">{hour.timeFrom}</Typography>
                                     <Typography variant="caption" color="text.secondary">{hour.timeTo}</Typography>
                                 </TableCell>
