@@ -1,17 +1,57 @@
 'use client';
 
 import { TimetableData } from '@/types/timetable';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import { useEffect, useState } from 'react';
+import {
+    Card,
+    CardHeader,
+    CardContent,
+    Typography,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    Chip,
+    Box,
+    Tabs,
+    Tab,
+    Stack
+} from '@mui/material';
 
 const DAYS_OF_WEEK = ['Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek'];
 
+interface TabPanelProps {
+    children?: React.ReactNode;
+    index: number;
+    value: number;
+}
+
+function CustomTabPanel(props: TabPanelProps) {
+    const { children, value, index, ...other } = props;
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`simple-tabpanel-${index}`}
+            aria-labelledby={`simple-tab-${index}`}
+            {...other}
+        >
+            {value === index && (
+                <Box sx={{ pt: 3 }}>
+                    {children}
+                </Box>
+            )}
+        </div>
+    );
+}
+
 export function TimetableView({ data }: { data: TimetableData | null }) {
     const [isMobile, setIsMobile] = useState(false);
+    const [tabValue, setTabValue] = useState(0);
 
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -20,121 +60,152 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
+    const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+        setTabValue(newValue);
+    };
+
     if (!data) return null;
 
     const renderLesson = (lessons: any[] | null) => {
-        if (!lessons || lessons.length === 0) return <div className="text-muted-foreground text-xs italic">Brak</div>;
+        if (!lessons || lessons.length === 0) return <Typography variant="caption" color="text.secondary" fontStyle="italic">Brak</Typography>;
 
         return (
-            <div className="flex flex-col gap-2">
+            <Stack spacing={1}>
                 {lessons.map((lesson, idx) => (
-                    <div key={idx} className="bg-secondary/20 p-2 rounded-md border border-border/50 shadow-sm flex flex-col gap-1 text-sm">
-                        <span className="font-semibold text-primary">{lesson.subject}</span>
-                        <div className="flex flex-wrap gap-1 mt-1">
-                            {lesson.teacher && <Badge variant="outline" className="text-xs">{lesson.teacher}</Badge>}
-                            {lesson.room && <Badge variant="secondary" className="text-xs">{lesson.room}</Badge>}
-                            {lesson.className && <Badge variant="default" className="text-xs">{lesson.className}</Badge>}
-                            {lesson.groupName && <Badge variant="destructive" className="text-xs">{lesson.groupName}</Badge>}
-                        </div>
-                    </div>
+                    <Paper key={idx} variant="outlined" sx={{ p: 1, bgcolor: 'action.hover', borderColor: 'divider' }}>
+                        <Typography variant="body2" fontWeight="bold" color="primary.main">
+                            {lesson.subject}
+                        </Typography>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 0.5 }}>
+                            {lesson.teacher && <Chip size="small" variant="outlined" label={lesson.teacher} />}
+                            {lesson.room && <Chip size="small" color="secondary" label={lesson.room} />}
+                            {lesson.className && <Chip size="small" color="primary" label={lesson.className} />}
+                            {lesson.groupName && <Chip size="small" color="error" label={lesson.groupName} />}
+                        </Box>
+                    </Paper>
                 ))}
-            </div>
+            </Stack>
         );
     };
 
     if (isMobile) {
         return (
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-xl">{data.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <Tabs defaultValue="0" className="w-full">
-                        <ScrollArea className="w-full whitespace-nowrap pb-2">
-                            <TabsList className="w-full justify-start h-12">
+            <Card elevation={4} sx={{ borderRadius: 3 }}>
+                <CardHeader
+                    title={<Typography variant="h5" fontWeight="bold">{data.title}</Typography>}
+                    sx={{ bgcolor: 'primary.main', color: 'primary.contrastText', py: 2 }}
+                />
+                <CardContent sx={{ p: 0 }}>
+                    <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
+                        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                            <Tabs
+                                value={tabValue}
+                                onChange={handleTabChange}
+                                variant="scrollable"
+                                scrollButtons="auto"
+                                allowScrollButtonsMobile
+                                aria-label="dni tygodnia"
+                            >
                                 {DAYS_OF_WEEK.map((day, idx) => (
-                                    <TabsTrigger key={idx} value={idx.toString()} className="min-w-[100px]">
-                                        {day}
-                                    </TabsTrigger>
+                                    <Tab key={idx} label={day} sx={{ minWidth: 100 }} />
                                 ))}
-                            </TabsList>
-                        </ScrollArea>
+                            </Tabs>
+                        </Box>
 
-                        {DAYS_OF_WEEK.map((_, dayIndex) => (
-                            <TabsContent key={dayIndex} value={dayIndex.toString()} className="mt-4 space-y-4">
-                                {Object.values(data.hours).map((hour, timeIndex) => {
-                                    // Make sure we have enough days data
-                                    if (!data.days[dayIndex]) return null;
+                        <Box sx={{ p: 2 }}>
+                            {DAYS_OF_WEEK.map((_, dayIndex) => (
+                                <CustomTabPanel key={dayIndex} value={tabValue} index={dayIndex}>
+                                    <Stack spacing={2}>
+                                        {Object.values(data.hours).map((hour, timeIndex) => {
+                                            if (!data.days[dayIndex]) return null;
 
-                                    const lessons = data.days[dayIndex][timeIndex];
-                                    if (!lessons || lessons.length === 0) return null; // hide empty slots on mobile
+                                            const lessons = data.days[dayIndex][timeIndex];
+                                            if (!lessons || lessons.length === 0) return null; // hide empty slots on mobile
 
-                                    return (
-                                        <div key={timeIndex} className="flex gap-4 p-4 border rounded-xl shadow-sm bg-card">
-                                            <div className="flex flex-col items-center justify-center min-w-[60px] border-r pr-4">
-                                                <span className="text-lg font-bold text-muted-foreground">{hour.number}</span>
-                                                <span className="text-xs whitespace-nowrap">{hour.timeFrom} - {hour.timeTo}</span>
-                                            </div>
-                                            <div className="flex-1">
-                                                {renderLesson(lessons)}
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                                {/* Show message if day is completely empty */}
-                                {(!data.days[dayIndex] || data.days[dayIndex].every(l => !l || l.length === 0)) && (
-                                    <div className="text-center p-8 text-muted-foreground bg-muted/20 rounded-xl">
-                                        Brak zajęć w tym dniu
-                                    </div>
-                                )}
-                            </TabsContent>
-                        ))}
-                    </Tabs>
+                                            return (
+                                                <Paper key={timeIndex} elevation={1} sx={{ display: 'flex', gap: 2, p: 2, borderRadius: 2 }}>
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        minWidth: '60px',
+                                                        borderRight: 1,
+                                                        borderColor: 'divider',
+                                                        pr: 2
+                                                    }}>
+                                                        <Typography variant="h6" fontWeight="bold" color="text.secondary">
+                                                            {hour.number}
+                                                        </Typography>
+                                                        <Typography variant="caption" color="text.secondary" whiteSpace="nowrap">
+                                                            {hour.timeFrom} - {hour.timeTo}
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box sx={{ flex: 1 }}>
+                                                        {renderLesson(lessons)}
+                                                    </Box>
+                                                </Paper>
+                                            );
+                                        })}
+
+                                        {(!data.days[dayIndex] || data.days[dayIndex].every(l => !l || l.length === 0)) && (
+                                            <Paper elevation={0} sx={{ p: 4, textAlign: 'center', bgcolor: 'action.hover', borderRadius: 2 }}>
+                                                <Typography color="text.secondary">Brak zajęć w tym dniu</Typography>
+                                            </Paper>
+                                        )}
+                                    </Stack>
+                                </CustomTabPanel>
+                            ))}
+                        </Box>
+                    </Box>
                 </CardContent>
             </Card>
         );
     }
 
     return (
-        <Card className="w-full overflow-hidden shadow-lg border-t-4 border-t-primary">
-            <CardHeader className="bg-muted/30 pb-4">
-                <CardTitle className="text-2xl font-bold tracking-tight">{data.title}</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-                <ScrollArea className="w-full max-h-[70vh] rounded-md">
-                    <Table>
-                        <TableHeader className="bg-muted/50 sticky top-0 z-10">
-                            <TableRow>
-                                <TableHead className="w-[60px] text-center font-bold">Nr</TableHead>
-                                <TableHead className="w-[120px] text-center font-bold">Godziny</TableHead>
-                                {DAYS_OF_WEEK.map(day => (
-                                    <TableHead key={day} className="min-w-[200px] text-center font-bold border-l">{day}</TableHead>
-                                ))}
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {Object.values(data.hours).map((hour, timeIndex) => (
-                                <TableRow key={timeIndex} className="hover:bg-muted/20 transition-colors">
-                                    <TableCell className="font-bold text-center text-muted-foreground bg-muted/10">{hour.number}</TableCell>
-                                    <TableCell className="text-center text-xs whitespace-nowrap bg-muted/10">
-                                        <div className="font-medium">{hour.timeFrom}</div>
-                                        <div className="text-muted-foreground">{hour.timeTo}</div>
-                                    </TableCell>
-
-                                    {DAYS_OF_WEEK.map((_, dayIndex) => {
-                                        const lessons = data.days[dayIndex]?.[timeIndex] || null;
-                                        return (
-                                            <TableCell key={dayIndex} className="align-top border-l p-3">
-                                                {renderLesson(lessons)}
-                                            </TableCell>
-                                        );
-                                    })}
-                                </TableRow>
+        <Card elevation={4} sx={{ borderRadius: 3, overflow: 'hidden' }}>
+            <CardHeader
+                title={<Typography variant="h4" fontWeight="bold">{data.title}</Typography>}
+                sx={{ bgcolor: 'primary.main', color: 'primary.contrastText', py: 3 }}
+            />
+            <TableContainer component={Paper} sx={{ borderRadius: 0 }}>
+                <Table stickyHeader aria-label="plan lekcji tabela">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell align="center" sx={{ fontWeight: 'bold', width: '60px', bgcolor: 'grey.100' }}>Nr</TableCell>
+                            <TableCell align="center" sx={{ fontWeight: 'bold', width: '120px', bgcolor: 'grey.100' }}>Godziny</TableCell>
+                            {DAYS_OF_WEEK.map(day => (
+                                <TableCell key={day} align="center" sx={{ fontWeight: 'bold', minWidth: '200px', bgcolor: 'grey.100', borderLeft: '1px solid', borderColor: 'divider' }}>
+                                    {day}
+                                </TableCell>
                             ))}
-                        </TableBody>
-                    </Table>
-                </ScrollArea>
-            </CardContent>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {Object.values(data.hours).map((hour, timeIndex) => (
+                            <TableRow key={timeIndex} hover>
+                                <TableCell align="center" sx={{ fontWeight: 'bold', color: 'text.secondary', bgcolor: 'grey.50' }}>
+                                    {hour.number}
+                                </TableCell>
+                                <TableCell align="center" sx={{ bgcolor: 'grey.50' }}>
+                                    <Typography variant="body2" fontWeight="medium">{hour.timeFrom}</Typography>
+                                    <Typography variant="caption" color="text.secondary">{hour.timeTo}</Typography>
+                                </TableCell>
+
+                                {DAYS_OF_WEEK.map((_, dayIndex) => {
+                                    const lessons = data.days[dayIndex]?.[timeIndex] || null;
+                                    return (
+                                        <TableCell key={dayIndex} sx={{ verticalAlign: 'top', borderLeft: '1px solid', borderColor: 'divider', p: 1.5 }}>
+                                            {renderLesson(lessons)}
+                                        </TableCell>
+                                    );
+                                })}
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </Card>
     );
 }
