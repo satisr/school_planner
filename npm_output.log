@@ -1,0 +1,39 @@
+
+> moj-projekt@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+✓ Ready in 505ms
+
+○ Compiling / ...
+ GET / 200 in 7.6s (next.js: 6.8s, application-code: 840ms)
+ GET / 200 in 106ms (next.js: 7ms, application-code: 99ms)
+ GET /api/timetable/list?url=https%3A%2F%2Fwww.pceikz.pl%2Fpliki%2Fplanlekcji%2Findex.html 200 in 3.2s (next.js: 2.3s, application-code: 955ms)
+ GET / 200 in 106ms (next.js: 5ms, application-code: 100ms)
+Error fetching list: FetchError: request to https://zsm1.k-k.pl/plan/lista.html failed, reason: Hostname/IP does not match certificate's altnames: Host: zsm1.k-k.pl. is not in the cert's altnames: DNS:bip.renskawies.pl, DNS:www.bip.renskawies.pl
+    at ignore-listed frames {
+  type: 'system',
+  errno: 'ERR_TLS_CERT_ALTNAME_INVALID',
+  code: 'ERR_TLS_CERT_ALTNAME_INVALID',
+  erroredSysCall: undefined
+}
+ GET /api/timetable/list?url=https%3A%2F%2Fzsm1.k-k.pl%2Fplan%2Findex.html 500 in 540ms (next.js: 4ms, application-code: 535ms)
+[browser] Error: request to https://zsm1.k-k.pl/plan/lista.html failed, reason: Hostname/IP does not match certificate's altnames: Host: zsm1.k-k.pl. is not in the cert's altnames: DNS:bip.renskawies.pl, DNS:www.bip.renskawies.pl
+    at handleFetchUrl (components/timetable/controls.tsx:53:39)
+  51 |                 const res = await fetch(`/api/timetable/list?url=${encodeURIComponent(url)...
+  52 |                 const data = await res.json();
+> 53 |                 if (data.error) throw new Error(data.error);
+     |                                       ^
+  54 |                 onListFetched(data);
+  55 |             }
+  56 |         } catch (error) { (components/timetable/controls.tsx:57:21)
+ GET / 200 in 80ms (next.js: 4ms, application-code: 75ms)
+ GET /api/timetable/list?url=https%3A%2F%2Fwww.pceikz.pl%2Fpliki%2Fplanlekcji%2Findex.html 200 in 601ms (next.js: 4ms, application-code: 597ms)
+ GET / 200 in 80ms (next.js: 5ms, application-code: 75ms)
+ GET /api/timetable/list?url=https%3A%2F%2Fwww.pceikz.pl%2Fpliki%2Fplanlekcji%2Findex.html 200 in 569ms (next.js: 4ms, application-code: 565ms)
+ GET /api/timetable?url=https%3A%2F%2Fwww.pceikz.pl%2Fpliki%2Fplanlekcji%2Fplany%2Fo2.html 200 in 1702ms (next.js: 1318ms, application-code: 384ms)
+ GET / 200 in 70ms (next.js: 4ms, application-code: 66ms)
+ GET /api/timetable/list?url=https%3A%2F%2Fwww.pceikz.pl%2Fpliki%2Fplanlekcji%2Findex.html 200 in 616ms (next.js: 4ms, application-code: 612ms)
+ GET /api/timetable?url=https%3A%2F%2Fwww.pceikz.pl%2Fpliki%2Fplanlekcji%2Fplany%2Fo2.html 200 in 262ms (next.js: 3ms, application-code: 259ms)
