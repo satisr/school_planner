@@ -51,14 +51,81 @@ function CustomTabPanel(props: TabPanelProps) {
 
 export function TimetableView({ data }: { data: TimetableData | null }) {
     const [isMobile, setIsMobile] = useState(false);
-    const [tabValue, setTabValue] = useState(0);
+
+    // We initialize it to null so we know when it hasn't been set yet (SSR or initial render)
+    // Then we handle default tab logic. Alternatively, use a generic effect without the lint warning by moving it.
+    // However, since it's only once on mount, we can use `setTimeout` or just keep it and disable the lint rule locally.
+    const [tabValue, setTabValue] = useState(0); // default to Monday for SSR
+
+    const [currentTimeInfo, setCurrentTimeInfo] = useState<{
+        dayIndex: number;
+        currentHourIndex: number | null;
+        nextHourIndex: number | null;
+    }>({ dayIndex: -1, currentHourIndex: null, nextHourIndex: null });
 
     useEffect(() => {
+        // Set initial tab to current day on client side to avoid hydration mismatch
+        const currentDayIndex = new Date().getDay() - 1;
+        if (currentDayIndex > 0 && currentDayIndex <= 4) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setTabValue(currentDayIndex);
+        }
+
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
         checkMobile();
         window.addEventListener('resize', checkMobile);
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
+
+    useEffect(() => {
+        if (!data) return;
+
+        const updateTimeInfo = () => {
+            const now = new Date();
+            const currentDayIndex = now.getDay() - 1; // 0 for Monday, 6 for Sunday
+
+            if (currentDayIndex < 0 || currentDayIndex > 4) {
+                // Weekend
+                setCurrentTimeInfo({ dayIndex: -1, currentHourIndex: null, nextHourIndex: null });
+                return;
+            }
+
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+            let currentHourIndex: number | null = null;
+            let nextHourIndex: number | null = null;
+
+            const hourEntries = Object.entries(data.hours);
+
+            for (let i = 0; i < hourEntries.length; i++) {
+                const [indexStr, hour] = hourEntries[i];
+                const index = parseInt(indexStr);
+
+                const [startH, startM] = hour.timeFrom.split(':').map(Number);
+                const [endH, endM] = hour.timeTo.split(':').map(Number);
+                const startTotal = startH * 60 + startM;
+                const endTotal = endH * 60 + endM;
+
+                if (currentMinutes >= startTotal && currentMinutes <= endTotal) {
+                    currentHourIndex = index;
+                    break;
+                } else if (currentMinutes < startTotal && nextHourIndex === null) {
+                    // This is the first lesson that starts after current time
+                    nextHourIndex = index;
+                }
+            }
+
+            setCurrentTimeInfo({
+                dayIndex: currentDayIndex,
+                currentHourIndex,
+                nextHourIndex
+            });
+        };
+
+        updateTimeInfo();
+        const interval = setInterval(updateTimeInfo, 60000); // update every minute
+
+        return () => clearInterval(interval);
+    }, [data]);
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setTabValue(newValue);
@@ -66,6 +133,7 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
 
     if (!data) return null;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const renderLesson = (lessons: any[] | null) => {
         if (!lessons || lessons.length === 0) return <Typography variant="caption" color="text.secondary" fontStyle="italic">Brak</Typography>;
 
@@ -122,8 +190,19 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                                             const lessons = data.days[dayIndex][timeIndex];
                                             if (!lessons || lessons.length === 0) return null; // hide empty slots on mobile
 
+                                            const actualHourKey = parseInt(Object.keys(data.hours)[timeIndex]);
+
+                                            const isCurrentDay = currentTimeInfo.dayIndex === dayIndex;
+                                            const isCurrentHour = isCurrentDay && currentTimeInfo.currentHourIndex === actualHourKey;
+                                            const isNextHour = isCurrentDay && currentTimeInfo.currentHourIndex === null && currentTimeInfo.nextHourIndex === actualHourKey;
+
+                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                            let bgcolor: string | ((theme: any) => string) = 'background.paper';
+                                            if (isCurrentHour) bgcolor = (theme) => theme.palette.mode === 'dark' ? 'rgba(144, 202, 249, 0.16)' : 'primary.50';
+                                            else if (isNextHour) bgcolor = (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 167, 38, 0.16)' : 'warning.50';
+
                                             return (
-                                                <Paper key={timeIndex} elevation={1} sx={{ display: 'flex', gap: 2, p: 2, borderRadius: 2 }}>
+                                                <Paper key={timeIndex} elevation={1} sx={{ display: 'flex', gap: 2, p: 2, borderRadius: 2, bgcolor }}>
                                                     <Box sx={{
                                                         display: 'flex',
                                                         flexDirection: 'column',
@@ -195,8 +274,27 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
 
                                 {DAYS_OF_WEEK.map((_, dayIndex) => {
                                     const lessons = data.days[dayIndex]?.[timeIndex] || null;
+                                    // timeIndex is string since it's an object key from Object.values(data.hours).map, wait, map index is number!
+                                    // Object.values(data.hours).map((hour, timeIndex) => (...)) -> timeIndex is a number.
+                                    // But earlier we used string logic. Let's trace it.
+
+                                    // timeIndex parameter from map is actually a number, representing the index in the Object.values array.
+                                    // However, currentTimeInfo.currentHourIndex stores the *key* from data.hours parsed as int.
+                                    // Let's get the actual hour index correctly.
+                                    // Object.keys(data.hours)[timeIndex] gives us the key.
+                                    const actualHourKey = parseInt(Object.keys(data.hours)[timeIndex]);
+
+                                    const isCurrentDay = currentTimeInfo.dayIndex === dayIndex;
+                                    const isCurrentHour = isCurrentDay && currentTimeInfo.currentHourIndex === actualHourKey;
+                                    const isNextHour = isCurrentDay && currentTimeInfo.currentHourIndex === null && currentTimeInfo.nextHourIndex === actualHourKey;
+
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    let bgcolor: string | ((theme: any) => string) = 'inherit';
+                                    if (isCurrentHour) bgcolor = (theme) => theme.palette.mode === 'dark' ? 'rgba(144, 202, 249, 0.16)' : 'primary.50';
+                                    else if (isNextHour) bgcolor = (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 167, 38, 0.16)' : 'warning.50';
+
                                     return (
-                                        <TableCell key={dayIndex} sx={{ verticalAlign: 'top', borderLeft: '1px solid', borderColor: 'divider', p: 1.5 }}>
+                                        <TableCell key={dayIndex} sx={{ verticalAlign: 'top', borderLeft: '1px solid', borderColor: 'divider', p: 1.5, bgcolor }}>
                                             {renderLesson(lessons)}
                                         </TableCell>
                                     );
