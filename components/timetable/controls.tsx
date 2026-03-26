@@ -1,12 +1,22 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    Typography,
+    TextField,
+    Button,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    Box,
+    CircularProgress,
+    Stack
+} from '@mui/material';
 import { TimetableList, TimetableData } from '@/types/timetable';
-import { Loader2 } from 'lucide-react';
 
 export function TimetableControls({
     onDataFetched,
@@ -45,7 +55,7 @@ export function TimetableControls({
             }
         } catch (error) {
             console.error(error);
-            alert('Failed to load. Please check the URL.');
+            alert('Nie udało się załadować. Sprawdź adres URL.');
         } finally {
             setLocalLoading(false);
         }
@@ -63,7 +73,7 @@ export function TimetableControls({
             onDataFetched(data);
         } catch (error) {
             console.error(error);
-            alert('Failed to load timetable.');
+            alert('Nie udało się załadować planu lekcji.');
         } finally {
             setLocalLoading(false);
         }
@@ -72,55 +82,68 @@ export function TimetableControls({
     const isLoading = loading || localLoading;
 
     return (
-        <Card className="mb-6">
-            <CardHeader>
-                <CardTitle>Plan lekcji</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <div className="flex flex-col sm:flex-row gap-2">
-                    <Input
-                        placeholder="Wklej adres (np. https://www.pceikz.pl/pliki/planlekcji/index.html)"
+        <Card elevation={3} sx={{ mb: 4, borderRadius: 2 }}>
+            <CardHeader
+                title={<Typography variant="h5" fontWeight="bold">Wybierz plan</Typography>}
+                sx={{ pb: 0 }}
+            />
+            <CardContent>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="stretch">
+                    <TextField
+                        fullWidth
+                        label="Wklej adres (np. https://www.pceikz.pl/pliki/planlekcji/index.html)"
+                        variant="outlined"
                         value={url}
                         onChange={(e) => setUrl(e.target.value)}
                         disabled={isLoading}
-                        className="flex-1"
+                        size="medium"
                     />
-                    <Button onClick={handleFetchUrl} disabled={!url || isLoading}>
-                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Pobierz'}
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleFetchUrl}
+                        disabled={!url || isLoading}
+                        sx={{ minWidth: { sm: '120px' }, height: { xs: '48px', sm: 'auto' } }}
+                        startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
+                    >
+                        {isLoading ? 'Ładowanie' : 'Pobierz'}
                     </Button>
-                </div>
+                </Stack>
 
                 {listData && (
-                    <div className="flex flex-col sm:flex-row gap-4 mt-4 bg-muted/50 p-4 rounded-lg">
-                        <div className="flex-1">
-                            <label className="text-sm font-medium mb-1 block">Wybierz typ:</label>
-                            <Select value={selectedType} onValueChange={(val: any) => setSelectedType(val)}>
-                                <SelectTrigger>
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="classes">Klasy</SelectItem>
-                                    <SelectItem value="teachers">Nauczyciele</SelectItem>
-                                    <SelectItem value="rooms">Sale</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="flex-[2]">
-                            <label className="text-sm font-medium mb-1 block">Wybierz plan:</label>
-                            <Select onValueChange={handleSelectTimetable}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Wybierz..." />
-                                </SelectTrigger>
-                                <SelectContent>
+                    <Box sx={{ mt: 3, p: 2, bgcolor: 'action.hover', borderRadius: 2 }}>
+                        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
+                            <FormControl fullWidth sx={{ flex: 1 }}>
+                                <InputLabel id="type-select-label">Wybierz typ</InputLabel>
+                                <Select
+                                    labelId="type-select-label"
+                                    value={selectedType}
+                                    label="Wybierz typ"
+                                    onChange={(e) => setSelectedType(e.target.value as any)}
+                                >
+                                    <MenuItem value="classes">Klasy</MenuItem>
+                                    <MenuItem value="teachers">Nauczyciele</MenuItem>
+                                    <MenuItem value="rooms">Sale</MenuItem>
+                                </Select>
+                            </FormControl>
+
+                            <FormControl fullWidth sx={{ flex: 2 }}>
+                                <InputLabel id="plan-select-label">Wybierz plan</InputLabel>
+                                <Select
+                                    labelId="plan-select-label"
+                                    label="Wybierz plan"
+                                    defaultValue=""
+                                    onChange={(e) => handleSelectTimetable(e.target.value as string)}
+                                >
                                     {(listData[selectedType] || []).map((item) => (
-                                        <SelectItem key={item.value} value={item.value}>
+                                        <MenuItem key={item.value} value={item.value}>
                                             {item.name}
-                                        </SelectItem>
+                                        </MenuItem>
                                     ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
+                                </Select>
+                            </FormControl>
+                        </Stack>
+                    </Box>
                 )}
             </CardContent>
         </Card>

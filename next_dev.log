@@ -7,28 +7,11 @@
 - Network:       http://192.168.0.2:3000
 ✓ Ready in 597ms
 
-○ Compiling / ...
- GET / 200 in 9.1s (next.js: 8.6s, application-code: 515ms)
- GET /api/timetable/list?url=https%3A%2F%2Fwww.pceikz.pl%2Fpliki%2Fplanlekcji%2Findex.html 200 in 2.8s (next.js: 1956ms, application-code: 880ms)
-Error fetching/parsing timetable: Error: Failed to fetch timetable: Not Found
-    at GET (app/api/timetable/route.ts:17:13)
-  15 |     const response = await fetch(url);
-  16 |     if (!response.ok) {
-> 17 |       throw new Error(`Failed to fetch timetable: ${response.statusText}`);
-     |             ^
-  18 |     }
-  19 |     const arrayBuffer = await response.arrayBuffer();
-  20 |
- GET /api/timetable?url=https%3A%2F%2Fwww.pceikz.pl%2Fpliki%2Fplanlekcji%2F1 500 in 2.1s (next.js: 1551ms, application-code: 540ms)
-[browser] Error: Failed to fetch timetable: Not Found
-    at handleSelectTimetable (components/timetable/controls.tsx:62:35)
-  60 |             const res = await fetch(`/api/timetable?url=${encodeURIComponent(targetUrl)}`);
-  61 |             const data = await res.json();
-> 62 |             if (data.error) throw new Error(data.error);
-     |                                   ^
-  63 |             onDataFetched(data);
-  64 |         } catch (error) {
-  65 |             console.error(error); (components/timetable/controls.tsx:65:21)
- GET / 200 in 80ms (next.js: 7ms, application-code: 72ms)
- GET /api/timetable/list?url=https%3A%2F%2Fwww.pceikz.pl%2Fpliki%2Fplanlekcji%2Findex.html 200 in 1119ms (next.js: 147ms, application-code: 972ms)
- GET /api/timetable?url=https%3A%2F%2Fwww.pceikz.pl%2Fpliki%2Fplanlekcji%2Fplany%2Fo1.html 200 in 371ms (next.js: 3ms, application-code: 368ms)
+ GET /robots.txt 404 in 3.4s (next.js: 3.2s, application-code: 216ms)
+ GET / 200 in 2.8s (next.js: 2.5s, application-code: 353ms)
+ GET / 200 in 182ms (next.js: 11ms, application-code: 171ms)
+ GET /api/timetable/list?url=https%3A%2F%2Fwww.pceikz.pl%2Fpliki%2Fplanlekcji%2Findex.html 200 in 4.4s (next.js: 3.3s, application-code: 1090ms)
+ GET /api/timetable?url=https%3A%2F%2Fwww.pceikz.pl%2Fpliki%2Fplanlekcji%2Fplany%2Fo1.html 200 in 4.1s (next.js: 3.2s, application-code: 935ms)
+ GET / 200 in 108ms (next.js: 6ms, application-code: 102ms)
+ GET /api/timetable/list?url=https%3A%2F%2Fwww.pceikz.pl%2Fpliki%2Fplanlekcji%2Findex.html 200 in 613ms (next.js: 5ms, application-code: 608ms)
+ GET /api/timetable?url=https%3A%2F%2Fwww.pceikz.pl%2Fpliki%2Fplanlekcji%2Fplany%2Fo1.html 200 in 275ms (next.js: 4ms, application-code: 272ms)
