@@ -406,28 +406,54 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                                                 </Paper>
 
                                                 {/* Break Row Mobile */}
-                                                {timeIndex <= Object.values(data.hours).length - 1 && (
-                                                    <Box
-                                                        className={breakInfo?.note ? '' : 'no-print'}
-                                                        sx={{
-                                                            display: 'flex',
-                                                            justifyContent: 'center',
-                                                            py: 0.5,
-                                                            cursor: 'pointer',
-                                                            opacity: breakInfo?.note ? 1 : 0.5,
-                                                            '&:hover': { opacity: 1 }
-                                                        }}
-                                                        onClick={() => handleOpenBreakDialog(dayIndex, timeIndex)}
-                                                    >
-                                                        {breakInfo?.note ? (
-                                                            <Chip label={breakInfo.note} color="info" size="small" variant="outlined" />
-                                                        ) : (
-                                                            <Typography variant="caption" color="text.disabled" sx={{ borderBottom: '1px dashed', borderColor: 'text.disabled' }}>
-                                                                + dodaj przerwę / dyżur
-                                                            </Typography>
-                                                        )}
-                                                    </Box>
-                                                )}
+                                                {timeIndex < Object.values(data.hours).length - 1 && (() => {
+                                                    const nextHourObj = Object.values(data.hours)[timeIndex + 1];
+                                                    const breakStartTime = hour.timeTo;
+                                                    const breakEndTime = nextHourObj.timeFrom;
+
+                                                    const [endH, endM] = breakStartTime.split(':').map(Number);
+                                                    const [nextStartH, nextStartM] = breakEndTime.split(':').map(Number);
+
+                                                    const duration = (nextStartH * 60 + nextStartM) - (endH * 60 + endM);
+                                                    const breakTimeText = duration > 0 ? `${breakStartTime} - ${breakEndTime} (${duration} min)` : '';
+
+                                                    return (
+                                                        <Box
+                                                            sx={{
+                                                                display: 'flex',
+                                                                flexDirection: 'column',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                py: 0.5,
+                                                            }}
+                                                        >
+                                                            {breakTimeText && (
+                                                                <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5 }}>
+                                                                    {breakTimeText}
+                                                                </Typography>
+                                                            )}
+                                                            <Box
+                                                                className={breakInfo?.note ? '' : 'no-print'}
+                                                                sx={{
+                                                                    display: 'flex',
+                                                                    justifyContent: 'center',
+                                                                    cursor: 'pointer',
+                                                                    opacity: breakInfo?.note ? 1 : 0.5,
+                                                                    '&:hover': { opacity: 1 }
+                                                                }}
+                                                                onClick={() => handleOpenBreakDialog(dayIndex, timeIndex)}
+                                                            >
+                                                                {breakInfo?.note ? (
+                                                                    <Chip label={breakInfo.note} color="info" size="small" variant="outlined" />
+                                                                ) : (
+                                                                    <Typography variant="caption" color="text.disabled" sx={{ borderBottom: '1px dashed', borderColor: 'text.disabled' }}>
+                                                                        + dodaj przerwę / dyżur
+                                                                    </Typography>
+                                                                )}
+                                                            </Box>
+                                                        </Box>
+                                                    );
+                                                })()}
                                                 </Fragment>
                                             );
                                         })}
@@ -505,9 +531,26 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                             </TableRow>
 
                             {/* Break Row Desktop */}
-                            {timeIndex <= Object.values(data.hours).length - 1 && (
+                            {timeIndex < Object.values(data.hours).length - 1 && (() => {
+                                const nextHourObj = Object.values(data.hours)[timeIndex + 1];
+                                const breakStartTime = hour.timeTo;
+                                const breakEndTime = nextHourObj.timeFrom;
+
+                                const [endH, endM] = breakStartTime.split(':').map(Number);
+                                const [nextStartH, nextStartM] = breakEndTime.split(':').map(Number);
+
+                                const duration = (nextStartH * 60 + nextStartM) - (endH * 60 + endM);
+                                const breakTimeText = duration > 0 ? `${breakStartTime} - ${breakEndTime} (${duration} min)` : '';
+
+                                return (
                                 <TableRow>
-                                    <TableCell colSpan={2} sx={{ p: 0, borderBottom: 'none' }}></TableCell>
+                                    <TableCell colSpan={2} align="center" sx={{ p: 0.5, borderBottom: 'none', color: 'text.secondary' }}>
+                                        {breakTimeText && (
+                                            <Typography variant="caption" sx={{ display: 'block' }}>
+                                                {breakTimeText}
+                                            </Typography>
+                                        )}
+                                    </TableCell>
                                     {DAYS_OF_WEEK.map((_, dayIndex) => {
                                         const breakInfo = userEdits.breaks[dayIndex]?.[timeIndex];
                                         return (
@@ -538,7 +581,8 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                                         );
                                     })}
                                 </TableRow>
-                            )}
+                                );
+                            })()}
                             </Fragment>
                         ))}
                     </TableBody>

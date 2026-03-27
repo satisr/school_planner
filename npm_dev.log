@@ -5,23 +5,44 @@
 ▲ Next.js 16.2.1 (Turbopack)
 - Local:         http://localhost:3000
 - Network:       http://192.168.0.2:3000
-✓ Ready in 524ms
+✓ Ready in 541ms
 
 ○ Compiling / ...
- GET / 200 in 9.8s (next.js: 8.9s, application-code: 917ms)
- GET / 200 in 108ms (next.js: 6ms, application-code: 102ms)
- GET / 200 in 91ms (next.js: 4ms, application-code: 87ms)
- GET / 200 in 92ms (next.js: 4ms, application-code: 88ms)
- GET /api/timetable/list?url=https%3A%2F%2Fzst.czest.pl%2Fpliki%2Fplan%2Findex.html 404 in 3.0s (next.js: 2.1s, application-code: 933ms)
-[browser] Error: lista.html not found or invalid URL
-    at handleFetchUrl (components/timetable/controls.tsx:53:39)
-  51 |                 const res = await fetch(`/api/timetable/list?url=${encodeURIComponent(url)...
-  52 |                 const data = await res.json();
-> 53 |                 if (data.error) throw new Error(data.error);
+ GET / 200 in 8.0s (next.js: 7.2s, application-code: 806ms)
+ GET / 200 in 101ms (next.js: 5ms, application-code: 96ms)
+Error fetching/parsing timetable: FetchError: request to https://zstio-jar.edu.pl/plan/plany/o16.html failed, reason: getaddrinfo ENOTFOUND zstio-jar.edu.pl
+    at ignore-listed frames {
+  type: 'system',
+  errno: 'ENOTFOUND',
+  code: 'ENOTFOUND',
+  erroredSysCall: 'getaddrinfo'
+}
+ GET /api/timetable?url=https%3A%2F%2Fzstio-jar.edu.pl%2Fplan%2Fplany%2Fo16.html 500 in 3.7s (next.js: 3.6s, application-code: 183ms)
+[browser] Error: request to https://zstio-jar.edu.pl/plan/plany/o16.html failed, reason: getaddrinfo ENOTFOUND zstio-jar.edu.pl
+    at handleFetchUrl (components/timetable/controls.tsx:47:39)
+  45 |                 const res = await fetch(`/api/timetable?url=${encodeURIComponent(url)}`);
+  46 |                 const data = await res.json();
+> 47 |                 if (data.error) throw new Error(data.error);
      |                                       ^
-  54 |                 onListFetched(data);
-  55 |             }
-  56 |         } catch (error) { (components/timetable/controls.tsx:57:21)
- GET / 200 in 98ms (next.js: 5ms, application-code: 93ms)
- GET / 200 in 76ms (next.js: 4ms, application-code: 73ms)
- GET /api/timetable?url=https%3A%2F%2Fwww.pceikz.pl%2Fpliki%2Fplanlekcji%2Fplany%2Fo1.html 200 in 2.7s (next.js: 1392ms, application-code: 1335ms)
+  48 |                 onDataFetched(data);
+  49 |             } else {
+  50 |                 // Otherwise try fetching list (components/timetable/controls.tsx:57:21)
+ GET / 200 in 111ms (next.js: 5ms, application-code: 105ms)
+Error fetching/parsing timetable: FetchError: request to https://zstio-jar.edu.pl/plan/plany/o16.html failed, reason: getaddrinfo ENOTFOUND zstio-jar.edu.pl
+    at ignore-listed frames {
+  type: 'system',
+  errno: 'ENOTFOUND',
+  code: 'ENOTFOUND',
+  erroredSysCall: 'getaddrinfo'
+}
+ GET /api/timetable?url=https%3A%2F%2Fzstio-jar.edu.pl%2Fplan%2Fplany%2Fo16.html 500 in 27ms (next.js: 4ms, application-code: 23ms)
+[browser] Error: request to https://zstio-jar.edu.pl/plan/plany/o16.html failed, reason: getaddrinfo ENOTFOUND zstio-jar.edu.pl
+    at handleFetchUrl (components/timetable/controls.tsx:47:39)
+  45 |                 const res = await fetch(`/api/timetable?url=${encodeURIComponent(url)}`);
+  46 |                 const data = await res.json();
+> 47 |                 if (data.error) throw new Error(data.error);
+     |                                       ^
+  48 |                 onDataFetched(data);
+  49 |             } else {
+  50 |                 // Otherwise try fetching list (components/timetable/controls.tsx:57:21)
+ GET / 200 in 80ms (next.js: 4ms, application-code: 76ms)
