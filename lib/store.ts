@@ -8,6 +8,7 @@ export interface UserLessonEdit {
     className?: string;
     deleted?: boolean;
     isNew?: boolean;
+    note?: string;
 }
 
 export interface UserBreakEdit {

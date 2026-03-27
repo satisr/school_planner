@@ -5,8 +5,10 @@ import {
     DialogContent,
     DialogActions,
     Button,
-    TextField
+    TextField,
+    IconButton
 } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { UserBreakEdit } from '@/lib/store';
 
 interface BreakEditDialogProps {
@@ -21,6 +23,7 @@ export function BreakEditDialog({ open, onClose, onSave, initialBreak }: BreakEd
 
     useEffect(() => {
         if (open) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setNote(initialBreak?.note || '');
         }
     }, [open, initialBreak]);
@@ -30,9 +33,23 @@ export function BreakEditDialog({ open, onClose, onSave, initialBreak }: BreakEd
         onClose();
     };
 
+    const handleDelete = () => {
+        if (window.confirm("Czy na pewno chcesz usunąć tę przerwę/notatkę?")) {
+            onSave({ note: '' });
+            onClose();
+        }
+    };
+
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle>Edycja przerwy / Notatka</DialogTitle>
+            <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                Edycja przerwy / Notatka
+                {initialBreak?.note && (
+                    <IconButton edge="end" color="error" onClick={handleDelete} title="Usuń przerwę">
+                        <DeleteIcon />
+                    </IconButton>
+                )}
+            </DialogTitle>
             <DialogContent dividers>
                 <TextField
                     autoFocus

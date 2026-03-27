@@ -23,8 +23,10 @@ import {
     Box,
     Tabs,
     Tab,
-    Stack
+    Stack,
+    IconButton
 } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 const DAYS_OF_WEEK = ['Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek'];
 
@@ -88,7 +90,7 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
         // Set initial tab to current day on client side to avoid hydration mismatch
         const currentDayIndex = new Date().getDay() - 1;
         if (currentDayIndex > 0 && currentDayIndex <= 4) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
+
             setTabValue(currentDayIndex);
         }
 
@@ -258,7 +260,7 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                         room: l.room || '',
                         groupName: l.groupName || '',
                         className: l.className || '',
-                        info: '',
+                        info: l.note || '',
                         infoCodes: []
                     }));
 
@@ -302,6 +304,11 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                             {lesson.className && <Chip size="small" color="primary" label={lesson.className} />}
                             {lesson.groupName && <Chip size="small" color="error" label={lesson.groupName} />}
                         </Box>
+                        {lesson.info && (
+                            <Typography variant="caption" display="block" color="error.main" fontWeight="bold" sx={{ mt: 0.5 }}>
+                                {lesson.info}
+                            </Typography>
+                        )}
                     </Paper>
                 ))}
             </Stack>
@@ -406,7 +413,7 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                                                 </Paper>
 
                                                 {/* Break Row Mobile */}
-                                                {timeIndex < Object.values(data.hours).length - 1 && (
+                                                {timeIndex < Object.values(data.hours).length && (
                                                     <Box
                                                         className={breakInfo?.note ? '' : 'no-print'}
                                                         sx={{
@@ -420,7 +427,33 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                                                         onClick={() => handleOpenBreakDialog(dayIndex, timeIndex)}
                                                     >
                                                         {breakInfo?.note ? (
-                                                            <Chip label={breakInfo.note} color="info" size="small" variant="outlined" />
+                                                            <Chip
+                                                                label={breakInfo.note}
+                                                                color="info"
+                                                                size="small"
+                                                                variant="outlined"
+                                                                onDelete={(e) => {
+                                                                    e.stopPropagation();
+                                                                    if (window.confirm("Czy na pewno chcesz usunąć tę przerwę?")) {
+                                                                        const newEdits = {
+                                                                            ...userEdits,
+                                                                            breaks: { ...userEdits.breaks }
+                                                                        };
+
+                                                                        if (!newEdits.breaks[dayIndex]) {
+                                                                            newEdits.breaks[dayIndex] = {};
+                                                                        } else {
+                                                                            newEdits.breaks[dayIndex] = { ...newEdits.breaks[dayIndex] };
+                                                                        }
+
+                                                                        delete newEdits.breaks[dayIndex][timeIndex]; // remove if empty
+
+                                                                        setUserEdits(newEdits);
+                                                                        saveUserEdits(data.title, newEdits);
+                                                                    }
+                                                                }}
+                                                                deleteIcon={<CloseIcon fontSize="small" />}
+                                                            />
                                                         ) : (
                                                             <Typography variant="caption" color="text.disabled" sx={{ borderBottom: '1px dashed', borderColor: 'text.disabled' }}>
                                                                 + dodaj przerwę / dyżur
@@ -505,7 +538,7 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                             </TableRow>
 
                             {/* Break Row Desktop */}
-                            {timeIndex < Object.values(data.hours).length - 1 && (
+                            {timeIndex < Object.values(data.hours).length && (
                                 <TableRow>
                                     <TableCell colSpan={2} sx={{ p: 0, borderBottom: 'none' }}></TableCell>
                                     {DAYS_OF_WEEK.map((_, dayIndex) => {
@@ -528,7 +561,37 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                                                 onClick={() => handleOpenBreakDialog(dayIndex, timeIndex)}
                                             >
                                                 {breakInfo?.note ? (
-                                                    <Typography variant="caption" fontWeight="bold" color="info.main">{breakInfo.note}</Typography>
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+                                                        <Typography variant="caption" fontWeight="bold" color="info.main">{breakInfo.note}</Typography>
+                                                        <IconButton
+                                                            size="small"
+                                                            color="error"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                if (window.confirm("Czy na pewno chcesz usunąć tę przerwę?")) {
+                                                                    const newEdits = {
+                                                                        ...userEdits,
+                                                                        breaks: { ...userEdits.breaks }
+                                                                    };
+
+                                                                    if (!newEdits.breaks[dayIndex]) {
+                                                                        newEdits.breaks[dayIndex] = {};
+                                                                    } else {
+                                                                        newEdits.breaks[dayIndex] = { ...newEdits.breaks[dayIndex] };
+                                                                    }
+
+                                                                    delete newEdits.breaks[dayIndex][timeIndex]; // remove if empty
+
+                                                                    setUserEdits(newEdits);
+                                                                    saveUserEdits(data.title, newEdits);
+                                                                }
+                                                            }}
+                                                            title="Usuń przerwę"
+                                                            sx={{ p: 0.5 }}
+                                                        >
+                                                            <CloseIcon fontSize="inherit" />
+                                                        </IconButton>
+                                                    </Box>
                                                 ) : (
                                                     <Typography variant="caption" color="text.disabled" sx={{ borderBottom: '1px dashed', borderColor: 'text.disabled' }}>
                                                         + dodaj przerwę / dyżur

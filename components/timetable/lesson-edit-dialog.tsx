@@ -31,6 +31,7 @@ export function LessonEditDialog({ open, onClose, onSave, initialLessons, dayNam
         if (open) {
             if (initialLessons && initialLessons.length > 0) {
                 // clone
+                // eslint-disable-next-line react-hooks/set-state-in-effect
                 setLessons(initialLessons.map(l => ({ ...l })));
             } else {
                 // start with empty if no lessons exist
@@ -124,6 +125,13 @@ export function LessonEditDialog({ open, onClose, onSave, initialLessons, dayNam
                                             onChange={(e) => handleLessonChange(idx, 'groupName', e.target.value)}
                                         />
                                     </Box>
+                                    <TextField
+                                        label="Notatka / Informacja (np. odwołane, zastępstwo)"
+                                        size="small"
+                                        fullWidth
+                                        value={lesson.note || ''}
+                                        onChange={(e) => handleLessonChange(idx, 'note', e.target.value)}
+                                    />
                                 </Stack>
                             </Box>
                         );
