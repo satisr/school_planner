@@ -128,3 +128,42 @@
     @apply font-sans;
   }
 }
+/* PRINT STYLES */
+@media print {
+  /* Hide unnecessary elements */
+  .no-print,
+  button,
+  .MuiButtonBase-root {
+    display: none !important;
+  }
+
+  /* Force light mode for printing to save ink */
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+
+  /* Adjust layout for print */
+  @page {
+    size: A4 landscape;
+    margin: 1cm;
+  }
+
+  /* Force table colors */
+  .MuiTableCell-root {
+    border-color: #ddd !important;
+    color: black !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Force background colors for specific cells if they use inline styles */
+  .MuiPaper-root {
+    box-shadow: none !important;
+    background-color: transparent !important;
+  }
+
+  .MuiChip-root {
+    border: 1px solid #ccc !important;
+  }
+}
