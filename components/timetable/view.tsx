@@ -1,7 +1,10 @@
 'use client';
 
+import React, { useEffect, useState, useMemo, Fragment } from 'react';
 import { TimetableData } from '@/types/timetable';
-import { useEffect, useState } from 'react';
+import { loadUserEdits, saveUserEdits, UserTimetableEdits, UserLessonEdit } from '@/lib/store';
+import { LessonEditDialog } from './lesson-edit-dialog';
+import { BreakEditDialog } from './break-edit-dialog';
 import {
     Card,
     CardHeader,
@@ -51,6 +54,14 @@ function CustomTabPanel(props: TabPanelProps) {
 
 export function TimetableView({ data }: { data: TimetableData | null }) {
     const [isMobile, setIsMobile] = useState(false);
+    const [userEdits, setUserEdits] = useState<UserTimetableEdits>({ lessons: {}, breaks: {} });
+
+    // Dialog state
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
+    const [editingLessonInfo, setEditingLessonInfo] = useState<{ dayIndex: number, timeIndex: number } | null>(null);
+
+    const [breakDialogOpen, setBreakDialogOpen] = useState(false);
+    const [editingBreakInfo, setEditingBreakInfo] = useState<{ dayIndex: number, timeIndex: number } | null>(null);
 
     // We initialize it to null so we know when it hasn't been set yet (SSR or initial render)
     // Then we handle default tab logic. Alternatively, use a generic effect without the lint warning by moving it.
@@ -62,6 +73,12 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
         currentHourIndex: number | null;
         nextHourIndex: number | null;
     }>({ dayIndex: -1, currentHourIndex: null, nextHourIndex: null });
+
+    useEffect(() => {
+        if (data?.title) {
+            setUserEdits(loadUserEdits(data.title));
+        }
+    }, [data?.title]);
 
     useEffect(() => {
         // Set initial tab to current day on client side to avoid hydration mismatch
@@ -131,16 +148,129 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
         setTabValue(newValue);
     };
 
+    const handleSaveLessonEdits = (edits: UserLessonEdit[]) => {
+        if (!data || !editingLessonInfo) return;
+        const { dayIndex, timeIndex } = editingLessonInfo;
+
+        const newEdits = {
+            ...userEdits,
+            lessons: { ...userEdits.lessons }
+        };
+
+        if (!newEdits.lessons[dayIndex]) {
+            newEdits.lessons[dayIndex] = {};
+        } else {
+             newEdits.lessons[dayIndex] = { ...newEdits.lessons[dayIndex] };
+        }
+
+        // Save the edits
+        newEdits.lessons[dayIndex][timeIndex] = edits;
+
+        setUserEdits(newEdits);
+        saveUserEdits(data.title, newEdits);
+    };
+
+    const handleOpenEditDialog = (dayIndex: number, timeIndex: number) => {
+        setEditingLessonInfo({ dayIndex, timeIndex });
+        setEditDialogOpen(true);
+    };
+
+    const handleSaveBreakEdits = (edit: { note: string }) => {
+        if (!data || !editingBreakInfo) return;
+        const { dayIndex, timeIndex } = editingBreakInfo;
+
+        const newEdits = {
+            ...userEdits,
+            breaks: { ...userEdits.breaks }
+        };
+
+        if (!newEdits.breaks[dayIndex]) {
+            newEdits.breaks[dayIndex] = {};
+        } else {
+             newEdits.breaks[dayIndex] = { ...newEdits.breaks[dayIndex] };
+        }
+
+        if (!edit.note) {
+            delete newEdits.breaks[dayIndex][timeIndex]; // remove if empty
+        } else {
+            newEdits.breaks[dayIndex][timeIndex] = edit;
+        }
+
+        setUserEdits(newEdits);
+        saveUserEdits(data.title, newEdits);
+    };
+
+    const handleOpenBreakDialog = (dayIndex: number, timeIndex: number) => {
+        setEditingBreakInfo({ dayIndex, timeIndex });
+        setBreakDialogOpen(true);
+    };
+
+    const mergedDataDays = useMemo(() => {
+        if (!data) return [];
+        const newDays = [...data.days];
+
+        // Deep copy to allow modifications
+        const deepCopiedDays = newDays.map(day =>
+            day ? day.map(timeSlot => timeSlot ? [...timeSlot] : null) : null
+        );
+
+        for (let dayIndex = 0; dayIndex < 5; dayIndex++) {
+            if (userEdits.lessons[dayIndex]) {
+                const dayEdits = userEdits.lessons[dayIndex];
+                Object.keys(dayEdits).forEach(timeIndexStr => {
+                    const timeIndex = parseInt(timeIndexStr, 10);
+                    const editedLessons = dayEdits[timeIndex];
+
+                    if (!deepCopiedDays[dayIndex]) {
+                        deepCopiedDays[dayIndex] = Array(Object.keys(data.hours).length).fill(null);
+                    }
+
+                    if (!deepCopiedDays[dayIndex][timeIndex] && editedLessons.length > 0) {
+                         deepCopiedDays[dayIndex][timeIndex] = [];
+                    }
+
+                    // For simplicity right now, if user edits exist for this slot, we completely replace the Wulkanowy lessons
+                    // A better approach would be to match by some ID, but Wulkanowy doesn't always provide one.
+                    const finalLessons = editedLessons.filter(l => !l.deleted).map(l => ({
+                        subject: l.subject || '',
+                        teacher: l.teacher || '',
+                        room: l.room || '',
+                        groupName: l.groupName || '',
+                        className: l.className || '',
+                        info: '',
+                        infoCodes: []
+                    }));
+
+                    if (finalLessons.length === 0 && editedLessons.some(l => l.deleted)) {
+                        deepCopiedDays[dayIndex][timeIndex] = null;
+                    } else if (finalLessons.length > 0) {
+                         deepCopiedDays[dayIndex][timeIndex] = finalLessons as any;
+                    }
+                });
+            }
+        }
+        return deepCopiedDays;
+    }, [data, userEdits]);
+
     if (!data) return null;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const renderLesson = (lessons: any[] | null) => {
-        if (!lessons || lessons.length === 0) return <Typography variant="caption" color="text.secondary" fontStyle="italic">Brak</Typography>;
+    const renderLesson = (lessons: any[] | null, dayIndex: number, timeIndex: number) => {
+        if (!lessons || lessons.length === 0) {
+            return (
+                <Box
+                    sx={{ height: '100%', minHeight: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }}
+                    onClick={() => handleOpenEditDialog(dayIndex, timeIndex)}
+                >
+                    <Typography variant="caption" color="text.secondary" fontStyle="italic">Brak</Typography>
+                </Box>
+            );
+        }
 
         return (
-            <Stack spacing={1}>
+            <Stack spacing={1} sx={{ height: '100%', cursor: 'pointer' }} onClick={() => handleOpenEditDialog(dayIndex, timeIndex)}>
                 {lessons.map((lesson, idx) => (
-                    <Paper key={idx} variant="outlined" sx={{ p: 1, bgcolor: 'action.hover', borderColor: 'divider' }}>
+                    <Paper key={idx} variant="outlined" sx={{ p: 1, bgcolor: 'action.hover', borderColor: 'divider', '&:hover': { bgcolor: 'action.selected' } }}>
                         <Typography variant="body2" fontWeight="bold" color="primary.main">
                             {lesson.subject}
                         </Typography>
@@ -185,10 +315,9 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                                 <CustomTabPanel key={dayIndex} value={tabValue} index={dayIndex}>
                                     <Stack spacing={2}>
                                         {Object.values(data.hours).map((hour, timeIndex) => {
-                                            if (!data.days[dayIndex]) return null;
+                                            if (!mergedDataDays[dayIndex]) return null;
 
-                                            const lessons = data.days[dayIndex][timeIndex];
-                                            if (!lessons || lessons.length === 0) return null; // hide empty slots on mobile
+                                            const lessons = mergedDataDays[dayIndex][timeIndex];
 
                                             const actualHourKey = parseInt(Object.keys(data.hours)[timeIndex]);
 
@@ -201,8 +330,11 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                                             if (isCurrentHour) bgcolor = (theme) => theme.palette.mode === 'dark' ? 'rgba(144, 202, 249, 0.16)' : 'primary.50';
                                             else if (isNextHour) bgcolor = (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 167, 38, 0.16)' : 'warning.50';
 
+                                            const breakInfo = userEdits.breaks[dayIndex]?.[timeIndex];
+
                                             return (
-                                                <Paper key={timeIndex} elevation={1} sx={{ display: 'flex', gap: 2, p: 2, borderRadius: 2, bgcolor }}>
+                                                <Fragment key={timeIndex}>
+                                                <Paper elevation={1} sx={{ display: 'flex', gap: 2, p: 2, borderRadius: 2, bgcolor }}>
                                                     <Box sx={{
                                                         display: 'flex',
                                                         flexDirection: 'column',
@@ -221,17 +353,35 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                                                         </Typography>
                                                     </Box>
                                                     <Box sx={{ flex: 1 }}>
-                                                        {renderLesson(lessons)}
+                                                        {renderLesson(lessons, dayIndex, timeIndex)}
                                                     </Box>
                                                 </Paper>
+
+                                                {/* Break Row Mobile */}
+                                                {timeIndex < Object.values(data.hours).length - 1 && (
+                                                    <Box
+                                                        sx={{
+                                                            display: 'flex',
+                                                            justifyContent: 'center',
+                                                            py: 0.5,
+                                                            cursor: 'pointer',
+                                                            opacity: breakInfo?.note ? 1 : 0.5,
+                                                            '&:hover': { opacity: 1 }
+                                                        }}
+                                                        onClick={() => handleOpenBreakDialog(dayIndex, timeIndex)}
+                                                    >
+                                                        {breakInfo?.note ? (
+                                                            <Chip label={breakInfo.note} color="info" size="small" variant="outlined" />
+                                                        ) : (
+                                                            <Typography variant="caption" color="text.disabled" sx={{ borderBottom: '1px dashed', borderColor: 'text.disabled' }}>
+                                                                + dodaj przerwę / dyżur
+                                                            </Typography>
+                                                        )}
+                                                    </Box>
+                                                )}
+                                                </Fragment>
                                             );
                                         })}
-
-                                        {(!data.days[dayIndex] || data.days[dayIndex].every(l => !l || l.length === 0)) && (
-                                            <Paper elevation={0} sx={{ p: 4, textAlign: 'center', bgcolor: 'action.hover', borderRadius: 2 }}>
-                                                <Typography color="text.secondary">Brak zajęć w tym dniu</Typography>
-                                            </Paper>
-                                        )}
                                     </Stack>
                                 </CustomTabPanel>
                             ))}
@@ -263,7 +413,8 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                     </TableHead>
                     <TableBody>
                         {Object.values(data.hours).map((hour, timeIndex) => (
-                            <TableRow key={timeIndex} hover>
+                            <Fragment key={timeIndex}>
+                            <TableRow hover>
                                 <TableCell align="center" sx={{ fontWeight: 'bold', color: 'text.secondary', bgcolor: (theme) => theme.palette.mode === 'dark' ? 'grey.800' : 'grey.50' }}>
                                     {hour.number}
                                 </TableCell>
@@ -273,7 +424,7 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                                 </TableCell>
 
                                 {DAYS_OF_WEEK.map((_, dayIndex) => {
-                                    const lessons = data.days[dayIndex]?.[timeIndex] || null;
+                                    const lessons = mergedDataDays[dayIndex]?.[timeIndex] || null;
                                     // timeIndex is string since it's an object key from Object.values(data.hours).map, wait, map index is number!
                                     // Object.values(data.hours).map((hour, timeIndex) => (...)) -> timeIndex is a number.
                                     // But earlier we used string logic. Let's trace it.
@@ -294,16 +445,71 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                                     else if (isNextHour) bgcolor = (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 167, 38, 0.16)' : 'warning.50';
 
                                     return (
-                                        <TableCell key={dayIndex} sx={{ verticalAlign: 'top', borderLeft: '1px solid', borderColor: 'divider', p: 1.5, bgcolor }}>
-                                            {renderLesson(lessons)}
+                                        <TableCell key={dayIndex} sx={{ verticalAlign: 'top', borderLeft: '1px solid', borderColor: 'divider', p: 1.5, bgcolor, padding: 0 }}>
+                                            <Box sx={{ p: 1.5, height: '100%', boxSizing: 'border-box' }}>
+                                                {renderLesson(lessons, dayIndex, timeIndex)}
+                                            </Box>
                                         </TableCell>
                                     );
                                 })}
                             </TableRow>
+
+                            {/* Break Row Desktop */}
+                            {timeIndex < Object.values(data.hours).length - 1 && (
+                                <TableRow>
+                                    <TableCell colSpan={2} sx={{ p: 0, borderBottom: 'none' }}></TableCell>
+                                    {DAYS_OF_WEEK.map((_, dayIndex) => {
+                                        const breakInfo = userEdits.breaks[dayIndex]?.[timeIndex];
+                                        return (
+                                            <TableCell
+                                                key={`break-${dayIndex}-${timeIndex}`}
+                                                align="center"
+                                                sx={{
+                                                    p: 0.5,
+                                                    borderLeft: '1px solid',
+                                                    borderColor: 'divider',
+                                                    cursor: 'pointer',
+                                                    opacity: breakInfo?.note ? 1 : 0,
+                                                    '&:hover': { opacity: 1 },
+                                                    bgcolor: breakInfo?.note ? 'info.50' : 'transparent',
+                                                    ...(breakInfo?.note && { borderTop: '1px solid', borderTopColor: 'info.200', borderBottom: '1px solid', borderBottomColor: 'info.200' })
+                                                }}
+                                                onClick={() => handleOpenBreakDialog(dayIndex, timeIndex)}
+                                            >
+                                                {breakInfo?.note ? (
+                                                    <Typography variant="caption" fontWeight="bold" color="info.main">{breakInfo.note}</Typography>
+                                                ) : (
+                                                    <Typography variant="caption" color="text.disabled" sx={{ borderBottom: '1px dashed', borderColor: 'text.disabled' }}>
+                                                        + dodaj przerwę / dyżur
+                                                    </Typography>
+                                                )}
+                                            </TableCell>
+                                        );
+                                    })}
+                                </TableRow>
+                            )}
+                            </Fragment>
                         ))}
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            {/* Dialogs */}
+            <LessonEditDialog
+                open={editDialogOpen}
+                onClose={() => setEditDialogOpen(false)}
+                onSave={handleSaveLessonEdits}
+                initialLessons={editingLessonInfo ? (mergedDataDays[editingLessonInfo.dayIndex]?.[editingLessonInfo.timeIndex] || null) : null}
+                dayName={editingLessonInfo ? DAYS_OF_WEEK[editingLessonInfo.dayIndex] : ''}
+                hourName={editingLessonInfo && data ? Object.values(data.hours)[editingLessonInfo.timeIndex]?.number.toString() : ''}
+            />
+
+            <BreakEditDialog
+                open={breakDialogOpen}
+                onClose={() => setBreakDialogOpen(false)}
+                onSave={handleSaveBreakEdits}
+                initialBreak={editingBreakInfo ? (userEdits.breaks[editingBreakInfo.dayIndex]?.[editingBreakInfo.timeIndex] || null) : null}
+            />
         </Card>
     );
 }

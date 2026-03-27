@@ -1,0 +1,398 @@
+
+> moj-projekt@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+✓ Ready in 511ms
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+
+○ Compiling / ...
+⨯ ./components/timetable/view.tsx:451:29
+Expected '</', got '{'
+  [90m449 |[0m                             </[33mTableRow[0m>
+  [90m450 |[0m
+[31m[1m>[0m [90m451 |[0m                             {[90m/* Break Row Desktop */[0m}
+  [90m    |[0m                             [31m[1m^[0m
+  [90m452 |[0m                             {timeIndex < [33mObject[0m.values(data.hours).length - [35m1[0m && (
+  [90m453 |[0m                                 <[33mTableRow[0m key={[32m`break-[0m${timeIndex[32m}`[0m}>
+  [90m454 |[0m                                     <[33mTableCell[0m colSpan={[35m2[0m} sx={{ p: [35m0[0m, borderBottom: [32m'non..[0m.
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./components/timetable/view.tsx [Client Component Browser]
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/timetable/view.tsx [Client Component SSR]
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+
+ GET / 500 in 7.4s (next.js: 7.1s, application-code: 253ms)
+[browser] Uncaught Error: ./components/timetable/view.tsx:451:29
+Expected '</', got '{'
+  449 |                             </TableRow>
+  450 |
+> 451 |                             {/* Break Row Desktop */}
+      |                             ^
+  452 |                             {timeIndex < Object.values(data.hours).length - 1 && (
+  453 |                                 <TableRow key={`break-${timeIndex}`}>
+  454 |                                     <TableCell colSpan={2} sx={{ p: 0, borderBottom: 'non...
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./components/timetable/view.tsx [Client Component Browser]
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/timetable/view.tsx [Client Component SSR]
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./components/timetable/view.tsx:451:29)
+    at <unknown> (Error: (./components/timetable/view.tsx:451:29)
+[browser] ./components/timetable/view.tsx:451:29
+Expected '</', got '{'
+  449 |                             </TableRow>
+  450 |
+> 451 |                             {/* Break Row Desktop */}
+      |                             ^
+  452 |                             {timeIndex < Object.values(data.hours).length - 1 && (
+  453 |                                 <TableRow key={`break-${timeIndex}`}>
+  454 |                                     <TableCell colSpan={2} sx={{ p: 0, borderBottom: 'non...
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./components/timetable/view.tsx [Client Component Browser]
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/timetable/view.tsx [Client Component SSR]
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[browser] ./components/timetable/view.tsx:451:29
+Expected '</', got '{'
+  449 |                             </TableRow>
+  450 |
+> 451 |                             {/* Break Row Desktop */}
+      |                             ^
+  452 |                             {timeIndex < Object.values(data.hours).length - 1 && (
+  453 |                                 <TableRow key={`break-${timeIndex}`}>
+  454 |                                     <TableCell colSpan={2} sx={{ p: 0, borderBottom: 'non...
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./components/timetable/view.tsx [Client Component Browser]
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/timetable/view.tsx [Client Component SSR]
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[browser] ./components/timetable/view.tsx:451:29
+Expected '</', got '{'
+  449 |                             </TableRow>
+  450 |
+> 451 |                             {/* Break Row Desktop */}
+      |                             ^
+  452 |                             {timeIndex < Object.values(data.hours).length - 1 && (
+  453 |                                 <TableRow key={`break-${timeIndex}`}>
+  454 |                                     <TableCell colSpan={2} sx={{ p: 0, borderBottom: 'non...
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./components/timetable/view.tsx [Client Component Browser]
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/timetable/view.tsx [Client Component SSR]
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[browser] ./components/timetable/view.tsx:451:29
+Expected '</', got '{'
+  449 |                             </TableRow>
+  450 |
+> 451 |                             {/* Break Row Desktop */}
+      |                             ^
+  452 |                             {timeIndex < Object.values(data.hours).length - 1 && (
+  453 |                                 <TableRow key={`break-${timeIndex}`}>
+  454 |                                     <TableCell colSpan={2} sx={{ p: 0, borderBottom: 'non...
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./components/timetable/view.tsx [Client Component Browser]
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/timetable/view.tsx [Client Component SSR]
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+⨯ ./components/timetable/view.tsx:451:29
+Expected '</', got '{'
+  [90m449 |[0m                             </[33mTableRow[0m>
+  [90m450 |[0m
+[31m[1m>[0m [90m451 |[0m                             {[90m/* Break Row Desktop */[0m}
+  [90m    |[0m                             [31m[1m^[0m
+  [90m452 |[0m                             {timeIndex < [33mObject[0m.values(data.hours).length - [35m1[0m && (
+  [90m453 |[0m                                 <[33mTableRow[0m key={[32m`break-[0m${timeIndex[32m}`[0m}>
+  [90m454 |[0m                                     <[33mTableCell[0m colSpan={[35m2[0m} sx={{ p: [35m0[0m, borderBottom: [32m'non..[0m.
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./components/timetable/view.tsx [Client Component Browser]
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/timetable/view.tsx [Client Component SSR]
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+
+ GET / 500 in 21ms (next.js: 9ms, application-code: 13ms)
+[browser] Uncaught Error: ./components/timetable/view.tsx:451:29
+Expected '</', got '{'
+  449 |                             </TableRow>
+  450 |
+> 451 |                             {/* Break Row Desktop */}
+      |                             ^
+  452 |                             {timeIndex < Object.values(data.hours).length - 1 && (
+  453 |                                 <TableRow key={`break-${timeIndex}`}>
+  454 |                                     <TableCell colSpan={2} sx={{ p: 0, borderBottom: 'non...
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./components/timetable/view.tsx [Client Component Browser]
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/timetable/view.tsx [Client Component SSR]
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./components/timetable/view.tsx:451:29)
+    at <unknown> (Error: (./components/timetable/view.tsx:451:29)
+[browser] ./components/timetable/view.tsx:451:29
+Expected '</', got '{'
+  449 |                             </TableRow>
+  450 |
+> 451 |                             {/* Break Row Desktop */}
+      |                             ^
+  452 |                             {timeIndex < Object.values(data.hours).length - 1 && (
+  453 |                                 <TableRow key={`break-${timeIndex}`}>
+  454 |                                     <TableCell colSpan={2} sx={{ p: 0, borderBottom: 'non...
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./components/timetable/view.tsx [Client Component Browser]
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/timetable/view.tsx [Client Component SSR]
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[browser] ./components/timetable/view.tsx:451:29
+Expected '</', got '{'
+  449 |                             </TableRow>
+  450 |
+> 451 |                             {/* Break Row Desktop */}
+      |                             ^
+  452 |                             {timeIndex < Object.values(data.hours).length - 1 && (
+  453 |                                 <TableRow key={`break-${timeIndex}`}>
+  454 |                                     <TableCell colSpan={2} sx={{ p: 0, borderBottom: 'non...
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./components/timetable/view.tsx [Client Component Browser]
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/timetable/view.tsx [Client Component SSR]
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+⨯ ./components/timetable/view.tsx:451:29
+Expected '</', got '{'
+  [90m449 |[0m                             </[33mTableRow[0m>
+  [90m450 |[0m
+[31m[1m>[0m [90m451 |[0m                             {[90m/* Break Row Desktop */[0m}
+  [90m    |[0m                             [31m[1m^[0m
+  [90m452 |[0m                             {timeIndex < [33mObject[0m.values(data.hours).length - [35m1[0m && (
+  [90m453 |[0m                                 <[33mTableRow[0m key={[32m`break-[0m${timeIndex[32m}`[0m}>
+  [90m454 |[0m                                     <[33mTableCell[0m colSpan={[35m2[0m} sx={{ p: [35m0[0m, borderBottom: [32m'non..[0m.
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./components/timetable/view.tsx [Client Component Browser]
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/timetable/view.tsx [Client Component SSR]
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+
+ GET / 500 in 23ms (next.js: 8ms, application-code: 15ms)
+[browser] Uncaught Error: ./components/timetable/view.tsx:451:29
+Expected '</', got '{'
+  449 |                             </TableRow>
+  450 |
+> 451 |                             {/* Break Row Desktop */}
+      |                             ^
+  452 |                             {timeIndex < Object.values(data.hours).length - 1 && (
+  453 |                                 <TableRow key={`break-${timeIndex}`}>
+  454 |                                     <TableCell colSpan={2} sx={{ p: 0, borderBottom: 'non...
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./components/timetable/view.tsx [Client Component Browser]
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/timetable/view.tsx [Client Component SSR]
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./components/timetable/view.tsx:451:29)
+    at <unknown> (Error: (./components/timetable/view.tsx:451:29)
+[browser] ./components/timetable/view.tsx:451:29
+Expected '</', got '{'
+  449 |                             </TableRow>
+  450 |
+> 451 |                             {/* Break Row Desktop */}
+      |                             ^
+  452 |                             {timeIndex < Object.values(data.hours).length - 1 && (
+  453 |                                 <TableRow key={`break-${timeIndex}`}>
+  454 |                                     <TableCell colSpan={2} sx={{ p: 0, borderBottom: 'non...
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./components/timetable/view.tsx [Client Component Browser]
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/timetable/view.tsx [Client Component SSR]
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[browser] ./components/timetable/view.tsx:451:29
+Expected '</', got '{'
+  449 |                             </TableRow>
+  450 |
+> 451 |                             {/* Break Row Desktop */}
+      |                             ^
+  452 |                             {timeIndex < Object.values(data.hours).length - 1 && (
+  453 |                                 <TableRow key={`break-${timeIndex}`}>
+  454 |                                     <TableCell colSpan={2} sx={{ p: 0, borderBottom: 'non...
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./components/timetable/view.tsx [Client Component Browser]
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/timetable/view.tsx [Client Component SSR]
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+✓ Compiled in 434ms
+ GET / 200 in 726ms (next.js: 243ms, application-code: 483ms)
+ GET /api/timetable/list?url=https%3A%2F%2Fwww.pceikz.pl%2Fpliki%2Fplanlekcji%2Findex.html 200 in 3.0s (next.js: 1953ms, application-code: 1008ms)
+ GET / 200 in 101ms (next.js: 5ms, application-code: 96ms)
+ GET /api/timetable/list?url=https%3A%2F%2Fwww.pceikz.pl%2Fpliki%2Fplanlekcji%2Findex.html 200 in 583ms (next.js: 3ms, application-code: 580ms)
+ GET /api/timetable?url=https%3A%2F%2Fwww.pceikz.pl%2Fpliki%2Fplanlekcji%2Fplany%2Fo1.html 200 in 1587ms (next.js: 1220ms, application-code: 367ms)
+[browser] Uncaught ReferenceError: React is not defined
+    at <unknown> (components/timetable/view.tsx:411:30)
+    at Array.map (<anonymous>)
+    at TimetableView (components/timetable/view.tsx:410:52)
+    at Home (app/page.tsx:41:15)
+  409 |                     <TableBody>
+  410 |                         {Object.values(data.hours).map((hour, timeIndex) => (
+> 411 |                             <React.Fragment key={timeIndex}>
+      |                              ^
+  412 |                             <TableRow hover>
+  413 |                                 <TableCell align="center" sx={{ fontWeight: 'bold', color...
+  414 |                                     {hour.number}
+ GET / 200 in 87ms (next.js: 5ms, application-code: 82ms)
+ GET /api/timetable/list?url=https%3A%2F%2Fwww.pceikz.pl%2Fpliki%2Fplanlekcji%2Findex.html 200 in 604ms (next.js: 4ms, application-code: 600ms)
+ GET /api/timetable?url=https%3A%2F%2Fwww.pceikz.pl%2Fpliki%2Fplanlekcji%2Fplany%2Fo1.html 200 in 227ms (next.js: 4ms, application-code: 222ms)
+[browser] Uncaught ReferenceError: React is not defined
+    at <unknown> (components/timetable/view.tsx:411:30)
+    at Array.map (<anonymous>)
+    at TimetableView (components/timetable/view.tsx:410:52)
+    at Home (app/page.tsx:41:15)
+  409 |                     <TableBody>
+  410 |                         {Object.values(data.hours).map((hour, timeIndex) => (
+> 411 |                             <React.Fragment key={timeIndex}>
+      |                              ^
+  412 |                             <TableRow hover>
+  413 |                                 <TableCell align="center" sx={{ fontWeight: 'bold', color...
+  414 |                                     {hour.number}
+ GET / 200 in 79ms (next.js: 5ms, application-code: 74ms)
+Error fetching list: FetchError: request to https://zstk.ostrowwlkp.pl/planlekcji/lista.html failed, reason: getaddrinfo ENOTFOUND zstk.ostrowwlkp.pl
+    at ignore-listed frames {
+  type: 'system',
+  errno: 'ENOTFOUND',
+  code: 'ENOTFOUND',
+  erroredSysCall: 'getaddrinfo'
+}
+ GET /api/timetable/list?url=https%3A%2F%2Fzstk.ostrowwlkp.pl%2Fplanlekcji%2Findex.html 500 in 180ms (next.js: 3ms, application-code: 177ms)
+[browser] Error: request to https://zstk.ostrowwlkp.pl/planlekcji/lista.html failed, reason: getaddrinfo ENOTFOUND zstk.ostrowwlkp.pl
+    at handleFetchUrl (components/timetable/controls.tsx:53:39)
+  51 |                 const res = await fetch(`/api/timetable/list?url=${encodeURIComponent(url)...
+  52 |                 const data = await res.json();
+> 53 |                 if (data.error) throw new Error(data.error);
+     |                                       ^
+  54 |                 onListFetched(data);
+  55 |             }
+  56 |         } catch (error) { (components/timetable/controls.tsx:57:21)
+ GET / 200 in 78ms (next.js: 4ms, application-code: 74ms)
+ GET / 200 in 125ms (next.js: 5ms, application-code: 120ms)
+ GET / 200 in 97ms (next.js: 12ms, application-code: 85ms)
