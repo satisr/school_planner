@@ -5,6 +5,8 @@ import { TimetableData } from '@/types/timetable';
 import { loadUserEdits, saveUserEdits, UserTimetableEdits, UserLessonEdit } from '@/lib/store';
 import { LessonEditDialog } from './lesson-edit-dialog';
 import { BreakEditDialog } from './break-edit-dialog';
+import { ExportIcalDialog, IcalExportOptions } from './export-ical-dialog';
+import { generateIcalContent, downloadIcalFile } from '@/lib/ical-export';
 import {
     Card,
     CardHeader,
@@ -62,6 +64,8 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
 
     const [breakDialogOpen, setBreakDialogOpen] = useState(false);
     const [editingBreakInfo, setEditingBreakInfo] = useState<{ dayIndex: number, timeIndex: number } | null>(null);
+
+    const [exportIcalDialogOpen, setExportIcalDialogOpen] = useState(false);
 
     // We initialize it to null so we know when it hasn't been set yet (SSR or initial render)
     // Then we handle default tab logic. Alternatively, use a generic effect without the lint warning by moving it.
@@ -141,8 +145,22 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
         updateTimeInfo();
         const interval = setInterval(updateTimeInfo, 60000); // update every minute
 
-        return () => clearInterval(interval);
+        const handleExportIcalEvent = () => setExportIcalDialogOpen(true);
+        window.addEventListener('export-ical', handleExportIcalEvent);
+
+        return () => {
+            clearInterval(interval);
+            window.removeEventListener('export-ical', handleExportIcalEvent);
+        };
     }, [data]);
+
+    const handleGenerateIcal = (options: IcalExportOptions) => {
+        if (!data) return;
+        const icsContent = generateIcalContent(data, mergedDataDays, userEdits, options);
+        if (icsContent) {
+            downloadIcalFile(icsContent, `plan-lekcji-${data.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.ics`);
+        }
+    };
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setTabValue(newValue);
@@ -225,8 +243,11 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                         deepCopiedDays[dayIndex] = Array(Object.keys(data.hours).length).fill(null);
                     }
 
-                    if (!deepCopiedDays[dayIndex][timeIndex] && editedLessons.length > 0) {
-                         deepCopiedDays[dayIndex][timeIndex] = [];
+                    // deepCopiedDays[dayIndex] is definitely created above if it didn't exist
+                    const dayTarget = deepCopiedDays[dayIndex]!;
+
+                    if (!dayTarget[timeIndex] && editedLessons.length > 0) {
+                         dayTarget[timeIndex] = [];
                     }
 
                     // For simplicity right now, if user edits exist for this slot, we completely replace the Wulkanowy lessons
@@ -242,9 +263,10 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                     }));
 
                     if (finalLessons.length === 0 && editedLessons.some(l => l.deleted)) {
-                        deepCopiedDays[dayIndex][timeIndex] = null;
+                        dayTarget[timeIndex] = null;
                     } else if (finalLessons.length > 0) {
-                         deepCopiedDays[dayIndex][timeIndex] = finalLessons as any;
+                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                         dayTarget[timeIndex] = finalLessons as any;
                     }
                 });
             }
@@ -287,7 +309,7 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
     };
 
     const renderDialogs = () => (
-        <>
+        <Box className="no-print">
             <LessonEditDialog
                 open={editDialogOpen}
                 onClose={() => setEditDialogOpen(false)}
@@ -303,7 +325,13 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                 onSave={handleSaveBreakEdits}
                 initialBreak={editingBreakInfo ? (userEdits.breaks[editingBreakInfo.dayIndex]?.[editingBreakInfo.timeIndex] || null) : null}
             />
-        </>
+
+            <ExportIcalDialog
+                open={exportIcalDialogOpen}
+                onClose={() => setExportIcalDialogOpen(false)}
+                onExport={handleGenerateIcal}
+            />
+        </Box>
     );
 
     if (isMobile) {
@@ -380,6 +408,7 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                                                 {/* Break Row Mobile */}
                                                 {timeIndex < Object.values(data.hours).length - 1 && (
                                                     <Box
+                                                        className={breakInfo?.note ? '' : 'no-print'}
                                                         sx={{
                                                             display: 'flex',
                                                             justifyContent: 'center',
@@ -485,6 +514,7 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                                             <TableCell
                                                 key={`break-${dayIndex}-${timeIndex}`}
                                                 align="center"
+                                                className={breakInfo?.note ? '' : 'no-print'}
                                                 sx={{
                                                     p: 0.5,
                                                     borderLeft: '1px solid',
