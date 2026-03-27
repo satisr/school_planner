@@ -286,6 +286,26 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
         );
     };
 
+    const renderDialogs = () => (
+        <>
+            <LessonEditDialog
+                open={editDialogOpen}
+                onClose={() => setEditDialogOpen(false)}
+                onSave={handleSaveLessonEdits}
+                initialLessons={editingLessonInfo ? (mergedDataDays[editingLessonInfo.dayIndex]?.[editingLessonInfo.timeIndex] || null) : null}
+                dayName={editingLessonInfo ? DAYS_OF_WEEK[editingLessonInfo.dayIndex] : ''}
+                hourName={editingLessonInfo && data ? Object.values(data.hours)[editingLessonInfo.timeIndex]?.number.toString() : ''}
+            />
+
+            <BreakEditDialog
+                open={breakDialogOpen}
+                onClose={() => setBreakDialogOpen(false)}
+                onSave={handleSaveBreakEdits}
+                initialBreak={editingBreakInfo ? (userEdits.breaks[editingBreakInfo.dayIndex]?.[editingBreakInfo.timeIndex] || null) : null}
+            />
+        </>
+    );
+
     if (isMobile) {
         return (
             <Card elevation={4} sx={{ borderRadius: 3 }}>
@@ -388,6 +408,7 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                         </Box>
                     </Box>
                 </CardContent>
+                {renderDialogs()}
             </Card>
         );
     }
@@ -494,22 +515,7 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                 </Table>
             </TableContainer>
 
-            {/* Dialogs */}
-            <LessonEditDialog
-                open={editDialogOpen}
-                onClose={() => setEditDialogOpen(false)}
-                onSave={handleSaveLessonEdits}
-                initialLessons={editingLessonInfo ? (mergedDataDays[editingLessonInfo.dayIndex]?.[editingLessonInfo.timeIndex] || null) : null}
-                dayName={editingLessonInfo ? DAYS_OF_WEEK[editingLessonInfo.dayIndex] : ''}
-                hourName={editingLessonInfo && data ? Object.values(data.hours)[editingLessonInfo.timeIndex]?.number.toString() : ''}
-            />
-
-            <BreakEditDialog
-                open={breakDialogOpen}
-                onClose={() => setBreakDialogOpen(false)}
-                onSave={handleSaveBreakEdits}
-                initialBreak={editingBreakInfo ? (userEdits.breaks[editingBreakInfo.dayIndex]?.[editingBreakInfo.timeIndex] || null) : null}
-            />
+            {renderDialogs()}
         </Card>
     );
 }
