@@ -421,14 +421,18 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                                                         <Box
                                                             sx={{
                                                                 display: 'flex',
-                                                                flexDirection: 'column',
+                                                                flexDirection: 'row',
                                                                 alignItems: 'center',
-                                                                justifyContent: 'center',
+                                                                justifyContent: 'space-between',
                                                                 py: 0.5,
+                                                                px: 2,
+                                                                bgcolor: 'background.default',
+                                                                borderRadius: 1,
+                                                                my: 0.5,
                                                             }}
                                                         >
                                                             {breakTimeText && (
-                                                                <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5 }}>
+                                                                <Typography variant="caption" color="text.secondary">
                                                                     {breakTimeText}
                                                                 </Typography>
                                                             )}
@@ -436,7 +440,7 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                                                                 className={breakInfo?.note ? '' : 'no-print'}
                                                                 sx={{
                                                                     display: 'flex',
-                                                                    justifyContent: 'center',
+                                                                    justifyContent: 'flex-end',
                                                                     cursor: 'pointer',
                                                                     opacity: breakInfo?.note ? 1 : 0.5,
                                                                     '&:hover': { opacity: 1 }
@@ -447,7 +451,7 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                                                                     <Chip label={breakInfo.note} color="info" size="small" variant="outlined" />
                                                                 ) : (
                                                                     <Typography variant="caption" color="text.disabled" sx={{ borderBottom: '1px dashed', borderColor: 'text.disabled' }}>
-                                                                        + dodaj przerwę / dyżur
+                                                                        + dodaj przerwę
                                                                     </Typography>
                                                                 )}
                                                             </Box>

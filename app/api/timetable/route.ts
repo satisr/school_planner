@@ -39,9 +39,54 @@ export async function GET(request: Request) {
 
     // Pass the outerHTML as Table constructor might expect a string or specific element
     const parser = new Table(html);
+    const parsedDays = parser.getDays();
+
+    // Post-process the parsed days to fix missing group names
+    // Example: "4TT-2/2" in className should be "4TT" with groupName "2/2"
+    // Sometimes subject has it, sometimes className.
+    const days = parsedDays.map(day => {
+        if (!day) return day;
+        return day.map(timeSlot => {
+            if (!timeSlot) return timeSlot;
+            return timeSlot.map(lesson => {
+                let { className, groupName, subject } = lesson;
+
+                // Regex to find patterns like "-1/2", "-2/2", etc.
+                const groupRegex = /-([1-9]\/[1-9])/;
+
+                if (!groupName) {
+                    // Check className
+                    if (className) {
+                        const match = className.match(groupRegex);
+                        if (match) {
+                            groupName = match[1];
+                            className = className.replace(match[0], '').trim();
+                        }
+                    }
+
+                    // Check subject
+                    if (!groupName && subject) {
+                        const match = subject.match(groupRegex);
+                        if (match) {
+                            groupName = match[1];
+                            subject = subject.replace(match[0], '').trim();
+                        }
+                    }
+                }
+
+                return {
+                    ...lesson,
+                    className,
+                    groupName,
+                    subject
+                };
+            });
+        });
+    });
+
     const timetableData = {
         title: dom.window.document.querySelector('.tytulnapis')?.textContent || 'Timetable',
-        days: parser.getDays(),
+        days,
         hours: parser.getHours(),
     };
 
