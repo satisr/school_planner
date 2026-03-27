@@ -5,8 +5,12 @@ import {
     DialogContent,
     DialogActions,
     Button,
-    TextField
+    TextField,
+    IconButton,
+    Tooltip,
+    Box
 } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { UserBreakEdit } from '@/lib/store';
 
 interface BreakEditDialogProps {
@@ -30,6 +34,11 @@ export function BreakEditDialog({ open, onClose, onSave, initialBreak }: BreakEd
         onClose();
     };
 
+    const handleDelete = () => {
+        onSave({ note: '' });
+        onClose();
+    };
+
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
             <DialogTitle>Edycja przerwy / Notatka</DialogTitle>
@@ -45,9 +54,20 @@ export function BreakEditDialog({ open, onClose, onSave, initialBreak }: BreakEd
                     variant="outlined"
                 />
             </DialogContent>
-            <DialogActions>
-                <Button onClick={onClose} color="inherit">Anuluj</Button>
-                <Button onClick={handleSave} variant="contained" color="primary">Zapisz</Button>
+            <DialogActions sx={{ justifyContent: 'space-between' }}>
+                <Box>
+                    {initialBreak?.note && (
+                        <Tooltip title="Usuń przerwę/dyżur">
+                            <IconButton onClick={handleDelete} color="error" aria-label="usuń">
+                                <DeleteIcon />
+                            </IconButton>
+                        </Tooltip>
+                    )}
+                </Box>
+                <Box>
+                    <Button onClick={onClose} color="inherit">Anuluj</Button>
+                    <Button onClick={handleSave} variant="contained" color="primary" sx={{ ml: 1 }}>Zapisz</Button>
+                </Box>
             </DialogActions>
         </Dialog>
     );

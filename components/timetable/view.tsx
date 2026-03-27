@@ -406,7 +406,7 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                                                 </Paper>
 
                                                 {/* Break Row Mobile */}
-                                                {timeIndex < Object.values(data.hours).length - 1 && (
+                                                {timeIndex <= Object.values(data.hours).length - 1 && (
                                                     <Box
                                                         className={breakInfo?.note ? '' : 'no-print'}
                                                         sx={{
@@ -505,7 +505,7 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                             </TableRow>
 
                             {/* Break Row Desktop */}
-                            {timeIndex < Object.values(data.hours).length - 1 && (
+                            {timeIndex <= Object.values(data.hours).length - 1 && (
                                 <TableRow>
                                     <TableCell colSpan={2} sx={{ p: 0, borderBottom: 'none' }}></TableCell>
                                     {DAYS_OF_WEEK.map((_, dayIndex) => {
