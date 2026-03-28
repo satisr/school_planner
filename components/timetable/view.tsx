@@ -23,8 +23,10 @@ import {
     Box,
     Tabs,
     Tab,
-    Stack
+    Stack,
+    Tooltip
 } from '@mui/material';
+import SpeakerNotesIcon from '@mui/icons-material/SpeakerNotes';
 
 const DAYS_OF_WEEK = ['Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek'];
 
@@ -258,6 +260,7 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                         room: l.room || '',
                         groupName: l.groupName || '',
                         className: l.className || '',
+                        note: l.note || '',
                         info: '',
                         infoCodes: []
                     }));
@@ -293,9 +296,16 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
             <Stack spacing={1} sx={{ height: '100%', cursor: 'pointer' }} onClick={() => handleOpenEditDialog(dayIndex, timeIndex)}>
                 {lessons.map((lesson, idx) => (
                     <Paper key={idx} variant="outlined" sx={{ p: 1, bgcolor: 'action.hover', borderColor: 'divider', '&:hover': { bgcolor: 'action.selected' } }}>
-                        <Typography variant="body2" fontWeight="bold" color="primary.main">
-                            {lesson.subject}
-                        </Typography>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <Typography variant="body2" fontWeight="bold" color="primary.main">
+                                {lesson.subject}
+                            </Typography>
+                            {lesson.note && (
+                                <Tooltip title={lesson.note} placement="top" arrow>
+                                    <SpeakerNotesIcon fontSize="small" color="action" sx={{ ml: 1, opacity: 0.7 }} />
+                                </Tooltip>
+                            )}
+                        </Box>
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 0.5 }}>
                             {lesson.teacher && <Chip size="small" variant="outlined" label={lesson.teacher} />}
                             {lesson.room && <Chip size="small" color="secondary" label={lesson.room} />}
