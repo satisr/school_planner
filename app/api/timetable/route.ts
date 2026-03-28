@@ -51,8 +51,8 @@ export async function GET(request: Request) {
             return timeSlot.map(lesson => {
                 let { className, groupName, subject } = lesson;
 
-                // Regex to find patterns like "-1/2", "-2/2", etc.
-                const groupRegex = /-([1-9]\/[1-9])/;
+                // Regex to find patterns like "-1/2", " 2/2", "2/2", etc.
+                const groupRegex = /(?:[\s-])?([1-9]\/[1-9])/;
 
                 if (!groupName) {
                     // Check className
@@ -60,7 +60,7 @@ export async function GET(request: Request) {
                         const match = className.match(groupRegex);
                         if (match) {
                             groupName = match[1];
-                            className = className.replace(match[0], '').trim();
+                            className = className.replace(match[0], '').trim().replace(/\s{2,}/g, ' ');
                         }
                     }
 
@@ -69,7 +69,7 @@ export async function GET(request: Request) {
                         const match = subject.match(groupRegex);
                         if (match) {
                             groupName = match[1];
-                            subject = subject.replace(match[0], '').trim();
+                            subject = subject.replace(match[0], '').trim().replace(/\s{2,}/g, ' ');
                         }
                     }
                 }
