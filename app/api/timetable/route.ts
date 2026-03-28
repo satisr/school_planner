@@ -3,6 +3,8 @@ import fetch from 'node-fetch';
 import { JSDOM } from 'jsdom';
 import { Table } from '@wulkanowy/timetable-parser';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const url = searchParams.get('url');
@@ -70,6 +72,37 @@ export async function GET(request: Request) {
                         if (match) {
                             groupName = match[1];
                             subject = subject.replace(match[0], '').trim().replace(/\s{2,}/g, ' ');
+                        }
+                    }
+                }
+
+                // Dodatkowa heurystyka: jeśli klasa nadal nie istnieje, a w subject znajduje się coś wyglądającego na klasę (np. "4TT")
+                // lub subject i grupa połączona (np. "r_informat. 4TT w3" albo "4TT r_informat. w3" - zostało nam to po odcięciu grupy "2/2")
+                // wyodrębniamy to do zmiennej className
+                if (!className && subject) {
+                    // Rozbijamy subject na części oddzielone spacjami
+                    const parts = subject.split(/\s+/);
+                    if (parts.length > 1) {
+                        // Jeśli jedna z części wygląda na klasę (np. "4TT", "1A", "3T_p"), oddzielamy to
+                        // Zazwyczaj to pierwsza lub druga część jeśli subject zaczął się od nazwy przedmiotu
+                        const classRegex = /^[1-5][A-Z]+/;
+
+                        const classIndex = parts.findIndex(p => classRegex.test(p));
+                        if (classIndex !== -1) {
+                            className = parts[classIndex];
+                            parts.splice(classIndex, 1);
+                            subject = parts.join(' ').trim();
+                        }
+
+                        // Podobne rozwiązanie na wypadek uwięzionej sali "w3", "s24" etc.
+                        if (!lesson.room) {
+                            const roomRegex = /^[ws][0-9]+$|^[0-9]+$/i;
+                            const roomIndex = parts.findIndex(p => roomRegex.test(p));
+                            if (roomIndex !== -1) {
+                                lesson.room = parts[roomIndex];
+                                parts.splice(roomIndex, 1);
+                                subject = parts.join(' ').trim();
+                            }
                         }
                     }
                 }
