@@ -406,15 +406,33 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                                                 </Paper>
 
                                                 {/* Break Row Mobile */}
-                                                {timeIndex < Object.values(data.hours).length - 1 && (() => {
-                                                    const nextHourObj = Object.values(data.hours)[timeIndex + 1];
+                                                {(() => {
+                                                    const isLastHour = timeIndex === Object.values(data.hours).length - 1;
                                                     const breakStartTime = hour.timeTo;
-                                                    const breakEndTime = nextHourObj.timeFrom;
+                                                    let breakEndTime = '';
+                                                    let duration = 0;
 
-                                                    const [endH, endM] = breakStartTime.split(':').map(Number);
-                                                    const [nextStartH, nextStartM] = breakEndTime.split(':').map(Number);
+                                                    if (!isLastHour) {
+                                                        const nextHourObj = Object.values(data.hours)[timeIndex + 1];
+                                                        breakEndTime = nextHourObj.timeFrom;
 
-                                                    const duration = (nextStartH * 60 + nextStartM) - (endH * 60 + endM);
+                                                        const [endH, endM] = breakStartTime.split(':').map(Number);
+                                                        const [nextStartH, nextStartM] = breakEndTime.split(':').map(Number);
+
+                                                        duration = (nextStartH * 60 + nextStartM) - (endH * 60 + endM);
+                                                    } else {
+                                                        // Ostatnia lekcja - domyślnie 5 minut
+                                                        const [endH, endM] = breakStartTime.split(':').map(Number);
+                                                        let newM = endM + 5;
+                                                        let newH = endH;
+                                                        if (newM >= 60) {
+                                                            newH += 1;
+                                                            newM -= 60;
+                                                        }
+                                                        breakEndTime = `${String(newH).padStart(2, '0')}:${String(newM).padStart(2, '0')}`;
+                                                        duration = 5;
+                                                    }
+
                                                     const breakTimeText = duration > 0 ? `${breakStartTime} - ${breakEndTime} (${duration} min)` : '';
 
                                                     return (
@@ -535,15 +553,33 @@ export function TimetableView({ data }: { data: TimetableData | null }) {
                             </TableRow>
 
                             {/* Break Row Desktop */}
-                            {timeIndex < Object.values(data.hours).length - 1 && (() => {
-                                const nextHourObj = Object.values(data.hours)[timeIndex + 1];
+                            {(() => {
+                                const isLastHour = timeIndex === Object.values(data.hours).length - 1;
                                 const breakStartTime = hour.timeTo;
-                                const breakEndTime = nextHourObj.timeFrom;
+                                let breakEndTime = '';
+                                let duration = 0;
 
-                                const [endH, endM] = breakStartTime.split(':').map(Number);
-                                const [nextStartH, nextStartM] = breakEndTime.split(':').map(Number);
+                                if (!isLastHour) {
+                                    const nextHourObj = Object.values(data.hours)[timeIndex + 1];
+                                    breakEndTime = nextHourObj.timeFrom;
 
-                                const duration = (nextStartH * 60 + nextStartM) - (endH * 60 + endM);
+                                    const [endH, endM] = breakStartTime.split(':').map(Number);
+                                    const [nextStartH, nextStartM] = breakEndTime.split(':').map(Number);
+
+                                    duration = (nextStartH * 60 + nextStartM) - (endH * 60 + endM);
+                                } else {
+                                    // Ostatnia lekcja - domyślnie 5 minut
+                                    const [endH, endM] = breakStartTime.split(':').map(Number);
+                                    let newM = endM + 5;
+                                    let newH = endH;
+                                    if (newM >= 60) {
+                                        newH += 1;
+                                        newM -= 60;
+                                    }
+                                    breakEndTime = `${String(newH).padStart(2, '0')}:${String(newM).padStart(2, '0')}`;
+                                    duration = 5;
+                                }
+
                                 const breakTimeText = duration > 0 ? `${breakStartTime} - ${breakEndTime} (${duration} min)` : '';
 
                                 return (
