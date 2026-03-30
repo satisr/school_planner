@@ -7,6 +7,7 @@ import { ExportMenu } from '@/components/timetable/export-menu';
 import { TimetableData, TimetableList } from '@/types/timetable';
 import { Container, Typography, Box, Stack } from '@mui/material';
 import { ThemeToggle } from '@/components/theme-toggle';
+import Image from 'next/image';
 
 export default function Home() {
   const [data, setData] = useState<TimetableData | null>(null);
@@ -29,11 +30,11 @@ export default function Home() {
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           <Box className="no-print" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <Box>
-              <Typography variant="h3" component="h1" fontWeight="800" color="primary" gutterBottom>
-                Plan Lekcji
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <Image src="/logo.svg" alt="PlanItNow Logo" width={240} height={60} priority />
+              </Box>
               <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>
-                Szybki i wygodny dostęp do Twojego planu zajęć.
+                PlanItNow – Twój plan zajęć, zawsze pod ręką.
               </Typography>
             </Box>
             <Stack direction="row" spacing={2} alignItems="center">

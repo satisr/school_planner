@@ -5,25 +5,12 @@
 ▲ Next.js 16.2.1 (Turbopack)
 - Local:         http://localhost:3000
 - Network:       http://192.168.0.2:3000
-✓ Ready in 521ms
+✓ Ready in 553ms
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
 
 ○ Compiling / ...
- GET / 200 in 7.5s (next.js: 6.7s, application-code: 792ms)
- GET / 200 in 93ms (next.js: 5ms, application-code: 88ms)
-Error fetching/parsing timetable: FetchError: request to https://zstio-jaroslaw.pl/plan/plany/o23.html failed, reason: getaddrinfo ENOTFOUND zstio-jaroslaw.pl
-    at ignore-listed frames {
-  type: 'system',
-  errno: 'ENOTFOUND',
-  code: 'ENOTFOUND',
-  erroredSysCall: 'getaddrinfo'
-}
- GET /api/timetable?url=https%3A%2F%2Fzstio-jaroslaw.pl%2Fplan%2Fplany%2Fo23.html 500 in 2.9s (next.js: 2.6s, application-code: 235ms)
-[browser] Error: request to https://zstio-jaroslaw.pl/plan/plany/o23.html failed, reason: getaddrinfo ENOTFOUND zstio-jaroslaw.pl
-    at handleFetchUrl (components/timetable/controls.tsx:47:39)
-  45 |                 const res = await fetch(`/api/timetable?url=${encodeURIComponent(url)}`);
-  46 |                 const data = await res.json();
-> 47 |                 if (data.error) throw new Error(data.error);
-     |                                       ^
-  48 |                 onDataFetched(data);
-  49 |             } else {
-  50 |                 // Otherwise try fetching list (components/timetable/controls.tsx:57:21)
+ GET / 200 in 11.2s (next.js: 10.3s, application-code: 973ms)
