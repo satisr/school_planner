@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import fetch from 'node-fetch';
 import { TimetableList } from '@wulkanowy/timetable-parser';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const urlStr = searchParams.get('url');
