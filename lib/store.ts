@@ -1,11 +1,10 @@
-import { TableLesson } from '@wulkanowy/timetable-parser';
-
 export interface UserLessonEdit {
     subject?: string;
     teacher?: string;
     room?: string;
     groupName?: string;
     className?: string;
+    note?: string;
     deleted?: boolean;
     isNew?: boolean;
 }

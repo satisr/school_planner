@@ -93,6 +93,7 @@ export function generateIcalContent(
                     const desc = [];
                     if (l.teacher) desc.push(`Nauczyciel: ${l.teacher}`);
                     if (l.className) desc.push(`Klasa: ${l.className}`);
+                    if (l.note) desc.push(`Notatka: ${l.note}`);
                     return desc.join('\n');
                 }).join('\n\n');
 
