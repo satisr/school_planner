@@ -74,6 +74,16 @@ export async function GET(request: Request) {
                     }
                 }
 
+            // Heuristic to split concatenated class name and subject if className wasn't parsed properly
+            // Match pattern like "4TI zaj_z_wych" or "1w informatyka" inside subject
+            if (!className && subject) {
+                 const splitMatch = subject.match(/^([1-9][A-Za-z]+)\s+(.+)$/);
+                 if (splitMatch) {
+                     className = splitMatch[1];
+                     subject = splitMatch[2];
+                 }
+            }
+
                 return {
                     ...lesson,
                     className,
