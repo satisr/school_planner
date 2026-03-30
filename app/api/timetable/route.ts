@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import fetch from 'node-fetch';
-import { JSDOM } from 'jsdom';
 import { Table } from '@wulkanowy/timetable-parser';
 
 export const dynamic = 'force-dynamic';
@@ -32,14 +31,13 @@ export async function GET(request: Request) {
       html = decoder.decode(arrayBuffer);
     }
 
-    const dom = new JSDOM(html);
-    const tableElement = dom.window.document.querySelector('.tabela');
-
-    if (!tableElement) {
+    // Check if a timetable table (.tabela) exists in the provided HTML
+    const tableRegex = /<table[^>]*class="[^"]*\btabela\b[^"]*"[^>]*>/i;
+    if (!tableRegex.test(html)) {
        return NextResponse.json({ error: 'Could not find a timetable table (.tabela) in the provided HTML.' }, { status: 400 });
     }
 
-    // Pass the outerHTML as Table constructor might expect a string or specific element
+    // Pass the HTML as Table constructor expects a string
     const parser = new Table(html);
     const parsedDays = parser.getDays();
 
@@ -86,8 +84,17 @@ export async function GET(request: Request) {
         });
     });
 
+    // Extract title using regex instead of JSDOM
+    let extractedTitle = 'Timetable';
+    const titleRegex = /<span[^>]*class="[^"]*\btytulnapis\b[^"]*"[^>]*>([\s\S]*?)<\/span>/i;
+    const titleMatch = html.match(titleRegex);
+    if (titleMatch && titleMatch[1]) {
+        // Simple HTML decoding/cleaning for common entities if needed, though raw content should be ok for simple text
+        extractedTitle = titleMatch[1].trim().replace(/&nbsp;/g, ' ').replace(/<[^>]+>/g, '');
+    }
+
     const timetableData = {
-        title: dom.window.document.querySelector('.tytulnapis')?.textContent || 'Timetable',
+        title: extractedTitle,
         days,
         hours: parser.getHours(),
     };
