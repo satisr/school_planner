@@ -31,7 +31,7 @@ export default function Home() {
           <Box className="no-print" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <Box>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <Image src="/logo.svg" alt="PlanItNow Logo" width={240} height={60} priority />
+                <Image src="/logo2.png" alt="PlanItNow Logo" width={240} height={60} priority />
               </Box>
               <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>
                 PlanItNow – Twój plan zajęć, zawsze pod ręką.
