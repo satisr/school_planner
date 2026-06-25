@@ -1,9 +1,46 @@
 {
-  "name": "planitnow-monorepo",
-  "version": "0.1.0",
-  "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ]
+  "name": "school-planner",
+  "version": "1.0.0",
+  "main": "expo-router/entry",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "prebuild": "expo prebuild"
+  },
+  "dependencies": {
+    "@wulkanowy/timetable-parser": "^1.1.5",
+    "buffer": "^6.0.3",
+    "expo": "~52.0.25",
+    "expo-constants": "~17.0.3",
+    "expo-file-system": "~18.0.6",
+    "expo-linking": "~7.0.3",
+    "expo-notifications": "~0.29.11",
+    "expo-router": "~4.0.15",
+    "expo-sharing": "~13.0.1",
+    "expo-sqlite": "~15.0.6",
+    "expo-status-bar": "~2.0.1",
+    "expo-system-ui": "^56.0.5",
+    "metro": "^0.85.0",
+    "metro-core": "^0.85.0",
+    "metro-resolver": "^0.85.0",
+    "nativewind": "^4.1.23",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-native": "0.76.5",
+    "react-native-reanimated": "~3.16.1",
+    "react-native-safe-area-context": "4.12.0",
+    "react-native-screens": "~4.4.0",
+    "react-native-web": "~0.19.13",
+    "tailwindcss": "^3.4.17",
+    "text-encoding": "^0.7.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@types/react": "~18.3.12",
+    "@types/text-encoding": "^0.0.40",
+    "typescript": "^5.3.3"
+  },
+  "private": true
 }
