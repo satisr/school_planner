@@ -5,13 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Attach to Expo",
             "type": "node",
-            "request": "launch",
-            "name": "Launch Program",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "program": "${file}"
+            "request": "attach",
+            "port": 9229,
+            "restart": true
         }
     ]
 }
